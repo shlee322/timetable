@@ -1,0 +1,202 @@
+/*
+Copyright (C) 2015 Sanghyuck Lee <shlee322@elab.kr>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+body {
+    padding-top: 45px;
+}
+.server-time {
+    padding-right: 5px;
+}
+
+.sidebar {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .sidebar {
+        position: fixed;
+        top: 45px;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        display: block;
+        padding: 20px;
+        overflow-x: hidden;
+        overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+        background-color: #f5f5f5;
+        border-right: 1px solid #eee;
+    }
+}
+
+.search-results {
+    height: 160px;
+    overflow-y:scroll;
+    margin-bottom: 20px;
+}
+
+.search-results > .list-group {
+    margin-bottom: 0;
+}
+
+
+.info-div {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .info-div {
+        position: fixed;
+        top: 45px;
+        bottom: 0;
+        right: 0;
+        z-index: 1000;
+        display: block;
+        padding: 20px;
+        overflow-x: hidden;
+        overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+        background-color: #f5f5f5;
+        border-left: 1px solid #eee;
+    }
+}
+
+.timetable {
+    padding: 0;
+}
+
+.timetable-time-label-td {
+    float: left;
+    width: 50px;
+}
+
+.timetable-time-label {
+    width: 50px;
+    height: 60px;
+    border: 1px solid #f5f5f5;
+    text-align:right;
+    font-size: 11px;
+}
+
+.timetable-lecture-table-div {
+    padding-top: 50px;
+}
+
+.timetable-lecture-etc-list {
+    position: fixed;
+    height: 50px;
+    padding-left: 50px;
+    background-color: #ffffff;
+    z-index: 1000;
+}
+
+.timetable-etc-item-group {
+    border: 1px solid #f5f5f5;
+    border-top: 0;
+    width: 700px;
+    overflow-x: auto;
+    background-color: #ffffff;
+}
+
+.timetable-etc-item {
+    margin: 3px 1px;
+    border: 1px solid #ffffff;
+    font-size: 11px;
+}
+
+.timetable-table {
+}
+
+.timetable-time-col {
+    float: left;
+    width: 100px;
+}
+
+.timetable-time-col-label {
+    border: 1px solid #f5f5f5;
+    text-align:center;
+}
+
+.timetable-time-col-div-1 {
+    height: 30px;
+    border: 1px solid #f5f5f5;
+    border-left: 0;
+    border-bottom: 0;
+}
+
+.timetable-time-col-div-2 {
+    height: 30px;
+    border: 1px solid #f5f5f5;
+    border-left: 0;
+    border-top: 1px dashed #f5f5f5;
+}
+
+.lecture-info {
+    text-align: center;
+    border: 1px solid #f8f8f8;
+    background-color: #ffffff;
+    padding-bottom: 10px;
+}
+
+.lecture-info-timetable-data {
+    background-color: #e7e7e7;
+    color: #333333;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.lecture-info-tag {
+    white-space:normal;
+}
+
+.lecture-info-links {
+    margin-right: 3px;
+}
+
+.timetable-time-item {
+    position: absolute;
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 80px;
+    border: 1px solid #ffffff;
+    font-size: 11px;
+}
+
+.timetable-time-item-subject {
+    font-weight: bold;
+}
+
+.timetable-generator-request-lectures {
+    height: 160px;
+    overflow-y:scroll;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.timetable-generator-request-lectures > .list-group {
+    margin-bottom: 0;
+}
+
+.footer {
+    position: fixed;
+    bottom: 10px;
+    right: 0;
+}
+
+@media (min-width: 768px) {
+    .footer {
+        right: 250px;
+    }
+}

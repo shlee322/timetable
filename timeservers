@@ -1,0 +1,4 @@
+# 타임 서버의 리스트를 관리하는 파일입니다
+# [변수]
+# ${url} : 수강신청 서버의 URL
+# ${callback} : jsonp callback

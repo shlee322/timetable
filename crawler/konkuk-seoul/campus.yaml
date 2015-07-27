@@ -1,0 +1,16 @@
+timeserver: http://kupis.konkuk.ac.kr
+update:
+  year: 2015
+  term: 3
+  script: crawler.py
+default:
+  year: 2015
+  term: 3
+name:
+  univ: 건국대학교
+  campus: 서울
+  term:
+    1: 1
+    2: 여름
+    3: 2
+    4: 겨울
