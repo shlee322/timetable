@@ -254,8 +254,6 @@ class Lecture {
             item.setAttribute('class', 'timetable-etc-item');
             item.setAttribute('style', 'border-color:#1587BD;background-color:#9FC6E7;color:#1d1d1d;');
             item.setAttribute('onclick', 'Timetable.getInstance().removeTimetableLecture("' + this.id + '")');
-            item.setAttribute('onmouseover', 'Timetable.getInstance().setSelectLecture("' + this.id + '")');
-            item.setAttribute('onmouseout', 'Timetable.getInstance().setSelectLecture(null)');
 
             item.innerHTML = this.subject_name + ' (' + this.id + ')';
             group.appendChild(item);
@@ -273,8 +271,6 @@ class Lecture {
                 item.setAttribute('class', 'timetable-time-item');
                 item.setAttribute('style', 'margin-top:' + margin_top + 'px; height:' + height + 'px; border-color:#1587BD;background-color:#9FC6E7;color:#1d1d1d;');
                 item.setAttribute('onclick', 'Timetable.getInstance().removeTimetableLecture("' + this.id + '")');
-                item.setAttribute('onmouseover', 'Timetable.getInstance().setSelectLecture("' + this.id + '")');
-                item.setAttribute('onmouseout', 'Timetable.getInstance().setSelectLecture(null)');
 
                 var html = '<p><span class="timetable-time-item-subject">' + this.subject_name + '</span>';
                 html += '<span> ' + this.id + '</span></p>';
@@ -386,7 +382,7 @@ class Timetable {
     public init(): void
     {
         var hash_split = window.location.hash.split('/');
-        if(hash_split.length > 4 && !isNaN(hash_split[2]) && !isNaN(hash_split[3])) {
+        if(hash_split.length > 4 && !isNaN(hash_split[2]) && !isNaN(hash_split[3]) && hash_split[4] != '') {
             this._hashinfo.campus = hash_split[1];
             this._hashinfo.year = Number(hash_split[2]);
             this._hashinfo.term = Number(hash_split[3]);
@@ -478,6 +474,8 @@ class Timetable {
         this._currentYear = year;
         this._currentTerm = term;
 
+        ga('send', 'event', this.getCurrentCampus().getId(), 'setCurrentTerm', year + '/' + term);
+
         $.get('data/' + this.getCurrentCampus().getId() + '/' + year + '/term.json', function(data) {
             for(var i=0; i<data.length; i++) {
                 if(data[i].id == term) {
@@ -553,6 +551,8 @@ class Timetable {
                 Timetable.getInstance().showLectureList(data[i]);
             }
         });
+
+        ga('send', 'event', this.getCurrentCampus().getId(), 'selectDepartment', this._currentYear + '/' + this._currentTerm + '/' + depart_id);
     }
 
     public getDepartmentNames(depart_ids) {
@@ -613,6 +613,8 @@ class Timetable {
         this._timetableLectures.push(lecture);
 
         this.updateShowLectures();
+
+        ga('send', 'event', this.getCurrentCampus().getId(), 'addTimetableLecture', this._currentYear + '/' + this._currentTerm + '/' + lecture_id);
     }
 
     public removeTimetableLecture(lecture_id) {
