@@ -90,16 +90,29 @@ if __name__ == '__main__':
         # 서버 시간 안내를 위한 시간을 조회할 서버
         open(path.join(campus_data_dir, 'timeserver.json'), 'w').write(json.dumps(campus_data.get('timeserver')))
 
-    # template
-    print('create index.html')
-    from jinja2 import Environment, FileSystemLoader
-    env = Environment(loader=FileSystemLoader(path.join(root_dir, 'templates')))
-    template = env.get_template('index.html')
-    open(path.join(root_dir, 'index.html'), 'w').write(template.render())
+    def create_template():
+        # template
+        print('create index.html')
+        from jinja2 import Environment, FileSystemLoader
+        env = Environment(loader=FileSystemLoader(path.join(root_dir, 'templates')))
+        template = env.get_template('index.html')
+        open(path.join(root_dir, 'index.html'), 'w').write(template.render())
+        print('tsc timetable.ts')
+        subprocess.call(
+            ['tsc', 'timetable.ts'],
+            cwd=path.join(root_dir, 'static'),
+            env=os.environ.copy()
+        )
 
-    if len(sys.argv) > 1 and sys.argv[1] == 'template_only':
+
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'template':
+            create_template()
+        if path.isdir(path.join(crawler_dir, sys.argv[1])):
+            run_crawler(path.join(crawler_dir, sys.argv[1]))
         exit()
 
+    create_template()
     for crawler in os.listdir(crawler_dir):
         run_crawler(path.join(crawler_dir, crawler))
 
