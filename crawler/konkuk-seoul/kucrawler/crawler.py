@@ -29,7 +29,8 @@ from bs4 import BeautifulSoup, SoupStrainer
 from .lecture_time import get_lecture_timetable
 from .jsonp import jsonp
 
-WORKER_COUNT = 16
+DEPARTMENT_LECTURES_WORKER_COUNT = 8
+WORKER_COUNT = 8
 
 TERM_CODE = {
     '1': 'B01011',  # 1학기
@@ -49,6 +50,7 @@ lecture_department_index_dir = path.join(data_dir, 'lecture_department_index')
 departments = []
 lectures = {}
 
+department_lectures_qeueu = asyncio.Queue()
 lecture_queue = asyncio.Queue()
 loop = asyncio.get_event_loop()
 
@@ -74,6 +76,7 @@ class Lecture:
         self._temp_msg = data[13].text
 
         Lecture.LOAD_LECTURE_COUNT += 1
+        lecture_queue.put_nowait(self)
 
     @asyncio.coroutine
     def load_data(self):
@@ -84,7 +87,7 @@ class Lecture:
             'sbjtId': self.id,
         })
 
-        response_data = None
+        more_data = None
         try:
 
             response = yield from aiohttp.request(
@@ -96,12 +99,12 @@ class Lecture:
             )
 
             response_data = yield from response.read()
+            more_data = jsonp(response_data.decode('utf-8'))
         except Exception as e:
             print(e)
             yield from lecture_queue.put(self)
             return
 
-        more_data = jsonp(response_data.decode('utf-8'))
         self.subject_code = more_data[0].get('haksuId')
         self.subject_name = more_data[0].get('subject')
         self.type = more_data[0].get('pobtDivNm')
@@ -184,11 +187,14 @@ def load_departments():
     open(department_file, 'w').write(json.dumps(departments))
 
 
-def load_lectures():
-    for department in departments:
-        print("Konkuk Univ - Seoul Campus : load_lectures(department=%s)" % department)
-        res = requests.post(
-            'http://kupis.konkuk.ac.kr/sugang/acd/cour/time/SeoulTimetableInfo.jsp',
+@asyncio.coroutine
+def load_department_lectures_coroutine(department):
+    response_data = None
+    try:
+
+        response = yield from aiohttp.request(
+            method='POST',
+            url='http://kupis.konkuk.ac.kr/sugang/acd/cour/time/SeoulTimetableInfo.jsp',
             data={
                 'ltYy': year,
                 'ltShtm': term,
@@ -197,40 +203,83 @@ def load_lectures():
             },
             headers={
                 'User-Agent': 'Timetable; (+https://github.com/shlee322/timetable; Contact;)'
-            })
+            }
+        )
 
-        soup = BeautifulSoup(res.text, "lxml", parse_only=SoupStrainer('table', attrs={
-            'class': 'table_bg',
-            'cellpadding': '0',
-            'cellspacing': '1',
-            'border': '0',
-            'width': '100%'
-        }))
+        response_data = yield from response.read()
+    except Exception as e:
+        print(e)
+        yield from department_lectures_qeueu.put(department)
+        return
 
-        lecture_table = soup.find('table', {
-            'class': 'table_bg',
-            'cellpadding': '0',
-            'cellspacing': '1',
-            'border': '0',
-            'width': '100%'
-        })
+    print("Konkuk Univ - Seoul Campus : load_lectures(department=%s)" % department)
 
-        lecture_department_index = []
-        for lecture in lecture_table.find_all('tr')[1:]:
-            td_list = lecture.find_all('td')
-            if len(td_list) == 1:
-                continue
+    soup = BeautifulSoup(response_data, "lxml", parse_only=SoupStrainer('table', attrs={
+        'class': 'table_bg',
+        'cellpadding': '0',
+        'cellspacing': '1',
+        'border': '0',
+        'width': '100%'
+    }))
 
-            if td_list[2].text not in lectures:
-                lectures[td_list[2].text] = Lecture(td_list)
-                loop.run_until_complete(lecture_queue.put(lectures[td_list[2].text]))
+    lecture_table = soup.find('table', {
+        'class': 'table_bg',
+        'cellpadding': '0',
+        'cellspacing': '1',
+        'border': '0',
+        'width': '100%'
+    })
 
-            lectures[td_list[2].text].add_department(department['id'])
+    lecture_department_index = []
+    for lecture in lecture_table.find_all('tr')[1:]:
+        td_list = lecture.find_all('td')
+        if len(td_list) == 1:
+            continue
 
-            lecture_department_index.append(td_list[2].text)
+        if td_list[2].text not in lectures:
+            lectures[td_list[2].text] = Lecture(td_list)
 
-        open(path.join(lecture_department_index_dir, '%s.json' % department['id']), 'w').write(
-            json.dumps(lecture_department_index))
+        lectures[td_list[2].text].add_department(department['id'])
+
+        lecture_department_index.append(td_list[2].text)
+
+    open(path.join(lecture_department_index_dir, '%s.json' % department['id']), 'w').write(
+        json.dumps(lecture_department_index))
+
+
+@asyncio.coroutine
+def load_department_lectures_worker():
+    print('Konkuk Univ - Seoul Campus : Start load_department_lectures_worker')
+    while True:
+        yield from asyncio.sleep(random.random()/20)
+        try:
+            department = department_lectures_qeueu.get_nowait()
+            yield from load_department_lectures_coroutine(department)
+        except asyncio.QueueEmpty:
+            break
+
+    global DEPARTMENT_LECTURES_WORKER_COUNT
+    DEPARTMENT_LECTURES_WORKER_COUNT -= 1
+
+    print('Konkuk Univ - Seoul Campus : Stop load_department_lectures_worker %d' % DEPARTMENT_LECTURES_WORKER_COUNT)
+
+
+@asyncio.coroutine
+def wait_load_department_lectures():
+    while DEPARTMENT_LECTURES_WORKER_COUNT > 0:
+        yield from asyncio.sleep(1)
+
+    print('Konkuk Univ - Seoul Campus : end wait')
+
+
+def load_department_lectures():
+    for department in departments:
+        department_lectures_qeueu.put_nowait(department)
+
+    for i in range(WORKER_COUNT):
+        asyncio.async(load_department_lectures_worker())
+
+    loop.run_until_complete(wait_load_department_lectures())
 
 
 @asyncio.coroutine
@@ -238,13 +287,16 @@ def lecture_worker():
     print('Konkuk Univ - Seoul Campus : Start lecture_worker')
     while Lecture.LOAD_LECTURE_COUNT > 0:
         yield from asyncio.sleep(random.random()/20)
-        lecture = yield from lecture_queue.get()
+        try:
+            lecture = lecture_queue.get_nowait()
+        except asyncio.QueueEmpty:
+            continue
         yield from lecture.load_data()
 
     global WORKER_COUNT
     WORKER_COUNT -= 1
 
-    print('Konkuk Univ - Seoul Campus : exit lecture_worker %d' % WORKER_COUNT)
+    print('Konkuk Univ - Seoul Campus : Stop lecture_worker %d' % WORKER_COUNT)
 
 
 @asyncio.coroutine

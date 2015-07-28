@@ -18,5 +18,5 @@ from kucrawler import crawler
 
 crawler.init_dir()
 crawler.load_departments()
-crawler.load_lectures()
+crawler.load_department_lectures()
 crawler.save_lecture()
