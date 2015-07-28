@@ -35,7 +35,7 @@
                         id="campus_name">Loading...</span> <span
                         class="glyphicon glyphicon-chevron-down"></span></a></li>
                 <li><a href="#" data-toggle="modal" data-target="#select_term" id="term_name">Loading...</a></li>
-                <li><a href="javascript:add_bookmark()">저장</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#my_timetable">내 시간표 관리</a></li>
                 <li><a href="https://github.com/shlee322/timetable" target="_bleak">Github</a></li>
             </ul>
             <p class="navbar-text navbar-right server-time">서버시간 <span id="server_time">Loading...</span>
@@ -200,6 +200,46 @@
         </div>
     </div>
 </div>
+<div id="my_timetable" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="my_timetable_title">내 시간표 관리</h4>
+            </div>
+            <div class="modal-body">
+                <div id="my_timetable_login">
+                    <a id="kakao_login_btn"></a>
+                </div>
+                <div id="my_timetable_list" style="display: none;">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>학교</th>
+                                <th>등록시간</th>
+                                <th>불러오기</th>
+                                <th>삭제</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my_timetable_tbody">
+                            <tr>
+                                <td colspan="4">등록된 시간표가 존재하지 않습니다</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <form class="form-inline" onsubmit="return save_my_timetable($('#my_timetable_name').val());">
+                      <button type="submit" class="btn btn-default">저장</button>
+                      <small>현재 시간표 저장은 한개만 가능하며 기존의 시간표가 있을 경우 덮어쓰기 됩니다</small>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -213,7 +253,9 @@
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
 <script type="text/javascript" src="static/timetable.js"></script>
+<script type="text/javascript" src="static/mytimetable.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         var timetable_generator_switch = $("#timetable_generator_switch");
@@ -232,18 +274,6 @@
         window.scrollTo(0, 60 * 9);
         Timetable.getInstance().init();
     });
-
-    function add_bookmark() {
-        if (window.sidebar) {
-            window.sidebar.addPanel(location.href,document.title,"");
-        } else if(window.chrome) {
-            alert('크롬의 경우 Ctrl+D를 이용하여 저장하실 수 있습니다.');
-        } else if(document.all) {
-            window.external.AddFavorite(location.href,document.title);
-        } else {
-            alert('저장 실패! 즐겨찾기를 추가하여 저장 해주세요.');
-        }
-    }
 </script>
 </body>
 </html>

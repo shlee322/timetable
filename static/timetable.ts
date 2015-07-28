@@ -813,4 +813,30 @@ class Timetable {
     public nextTimetableGeneratorTimetable() {
         this.setTimetableGeneratorTimetableIndex(this._timetableGeneratorTimetableIndex + 1);
     }
+
+    public saveMyTimetable(name) {
+        var lecture_ids = [];
+
+        for(var i=0; i<this._timetableLectures.length; i++) {
+            lecture_ids.push(this._timetableLectures[i].getId());
+        }
+
+        return {
+            'name': name,
+            'campus': this.getCurrentCampus().getId(),
+            'campus_text': document.getElementById('campus_name').innerHTML,
+            'year': this._currentYear,
+            'term': this._currentTerm,
+            'term_text': document.getElementById('term_name').innerHTML,
+            'lecture_ids': lecture_ids
+        }
+    }
+
+    public setHashInfo(campus, year, term, lecture_ids) {
+        this._hashinfo.campus = null;
+        this._hashinfo.year = year;
+        this._hashinfo.term = term;
+        this._hashinfo.lectures = lecture_ids;
+        this.setCurrentCampus(campus);
+    }
 }
