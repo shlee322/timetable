@@ -7,8 +7,8 @@ before_install:
   - "sudo apt-get install -y python3-lxml"
 
 install:
-  - "sudo pip install -r requirements.txt"
-  - "sudo npm install -g typescript"
+  - "pip install -r requirements.txt"
+  - "npm install -g typescript"
 
 before_script:
   - "sh deploy/before_script.sh"
