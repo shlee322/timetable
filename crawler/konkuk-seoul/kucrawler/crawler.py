@@ -14,18 +14,22 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-import logging
 import sys
 import json
 import os
+import asyncio
+import random
 from os import path
 from urllib import parse
 
 import requests
-from bs4 import BeautifulSoup
+import aiohttp
+from bs4 import BeautifulSoup, SoupStrainer
 
 from .lecture_time import get_lecture_timetable
 from .jsonp import jsonp
+
+WORKER_COUNT = 16
 
 TERM_CODE = {
     '1': 'B01011',  # 1학기
@@ -45,8 +49,13 @@ lecture_department_index_dir = path.join(data_dir, 'lecture_department_index')
 departments = []
 lectures = {}
 
+lecture_queue = asyncio.Queue()
+loop = asyncio.get_event_loop()
+
 
 class Lecture:
+    LOAD_LECTURE_COUNT = 0
+
     def __init__(self, data):
         self.id = data[2].text
         self.type = None
@@ -60,15 +69,13 @@ class Lecture:
         self.links = []
         self.departments = []
 
-        self.load_data()
+        self._temp_lang = data[9].text
+        self._temp_pass = data[12].text
+        self._temp_msg = data[13].text
 
-        if data[9].text != '':
-            self.tags.append(data[9].text)
-        if data[12].text != '':
-            self.tags.append('PASS')
-        if data[13].text != '':
-            self.tags.append(data[13].text)
+        Lecture.LOAD_LECTURE_COUNT += 1
 
+    @asyncio.coroutine
     def load_data(self):
         query = parse.urlencode({
             'callback': 'timetable',
@@ -77,13 +84,24 @@ class Lecture:
             'sbjtId': self.id,
         })
 
-        res = requests.get(
-            'http://kupis.konkuk.ac.kr/sugang/acd/cour/time/MobileTimeTableInfoList.jsp?%s' % query,
-            headers={
-                'User-Agent': 'Timetable; (+https://github.com/shlee322/timetable; Contact;)'
-            })
+        response_data = None
+        try:
 
-        more_data = jsonp(res.text)
+            response = yield from aiohttp.request(
+                method='GET',
+                url='http://kupis.konkuk.ac.kr/sugang/acd/cour/time/MobileTimeTableInfoList.jsp?%s' % query,
+                headers={
+                    'User-Agent': 'Timetable; (+https://github.com/shlee322/timetable; Contact;)'
+                }
+            )
+
+            response_data = yield from response.read()
+        except Exception as e:
+            print(e)
+            yield from lecture_queue.put(self)
+            return
+
+        more_data = jsonp(response_data.decode('utf-8'))
         self.subject_code = more_data[0].get('haksuId')
         self.subject_name = more_data[0].get('subject')
         self.type = more_data[0].get('pobtDivNm')
@@ -103,6 +121,18 @@ class Lecture:
             'name': '인원검색',
             'url': 'http://kupis.konkuk.ac.kr/sugang/acd/cour/aply/CourInwonInqTime.jsp?ltYy=%s&ltShtm=%s&sbjtId=%s' % (year, term, self.id)
         })
+
+        if self._temp_lang != '':
+            self.tags.append(self._temp_lang)
+        if self._temp_pass != '':
+            self.tags.append('PASS')
+        if self._temp_msg != '':
+            self.tags.append(self._temp_msg)
+
+        print('Konkuk Univ - Seoul Campus : lecture load_data - %d - [%s] %s' % (
+            Lecture.LOAD_LECTURE_COUNT, self.id, self.subject_name))
+
+        Lecture.LOAD_LECTURE_COUNT -= 1
 
     def add_department(self, department):
         self.departments.append(department)
@@ -140,7 +170,7 @@ def load_departments():
             'User-Agent': 'Timetable; (+https://github.com/shlee322/timetable; Contact;)'
         })
 
-    soup = BeautifulSoup(res.text, "html.parser")
+    soup = BeautifulSoup(res.text, "lxml", parse_only=SoupStrainer('select', attrs={'name': 'openSust'}))
     sust_list = soup.find('select', {'name': 'openSust'})
 
     for sust in sust_list.find_all('option'):
@@ -169,7 +199,13 @@ def load_lectures():
                 'User-Agent': 'Timetable; (+https://github.com/shlee322/timetable; Contact;)'
             })
 
-        soup = BeautifulSoup(res.text, "html.parser")
+        soup = BeautifulSoup(res.text, "lxml", parse_only=SoupStrainer('table', attrs={
+            'class': 'table_bg',
+            'cellpadding': '0',
+            'cellspacing': '1',
+            'border': '0',
+            'width': '100%'
+        }))
 
         lecture_table = soup.find('table', {
             'class': 'table_bg',
@@ -187,6 +223,7 @@ def load_lectures():
 
             if td_list[2].text not in lectures:
                 lectures[td_list[2].text] = Lecture(td_list)
+                loop.run_until_complete(lecture_queue.put(lectures[td_list[2].text]))
 
             lectures[td_list[2].text].add_department(department['id'])
 
@@ -196,7 +233,34 @@ def load_lectures():
             json.dumps(lecture_department_index))
 
 
+@asyncio.coroutine
+def lecture_worker():
+    print('Konkuk Univ - Seoul Campus : Start lecture_worker')
+    while Lecture.LOAD_LECTURE_COUNT > 0:
+        yield from asyncio.sleep(random.random()/20)
+        lecture = yield from lecture_queue.get()
+        yield from lecture.load_data()
+
+    global WORKER_COUNT
+    WORKER_COUNT -= 1
+
+    print('Konkuk Univ - Seoul Campus : exit lecture_worker %d' % WORKER_COUNT)
+
+
+@asyncio.coroutine
+def wait_load_lectures():
+    while Lecture.LOAD_LECTURE_COUNT > 0 or WORKER_COUNT > 0:
+        yield from asyncio.sleep(1)
+
+    print('Konkuk Univ - Seoul Campus : end wait')
+
+
 def save_lecture():
+    for i in range(WORKER_COUNT):
+        asyncio.async(lecture_worker())
+
+    loop.run_until_complete(wait_load_lectures())
+
     print("Konkuk Univ - Seoul Campus : save_lecture")
     for lecture in lectures.values():
         open(path.join(lecture_dir, '%s.json' % lecture.id), 'w').write(lecture.to_json())

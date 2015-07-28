@@ -3,6 +3,9 @@ language: python
 python:
   - "3.4"
 
+before_install:
+  - apt-get install -y python3-lxml
+
 install:
   - "pip install -r requirements.txt"
   - "npm install -g typescript"
