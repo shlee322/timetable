@@ -12,3 +12,7 @@ script:
 
 addons:
   ssh_known_hosts: github.com
+
+branches:
+  except:
+    - gh-pages
