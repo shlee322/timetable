@@ -29,15 +29,15 @@
             </button>
             <a class="navbar-brand" href="#">Timetable</a>
         </div>
-        <ul class="nav navbar-nav">
-            <li><a href="#" data-toggle="modal" data-target="#select_campus"><span
-                    id="campus_name">Loading...</span> <span
-                    class="glyphicon glyphicon-chevron-down"></span></a></li>
-            <li><a href="#" data-toggle="modal" data-target="#select_term" id="term_name">Loading...</a></li>
-            <li><a href="javascript:add_bookmark()">저장</a></li>
-            <li><a href="https://github.com/shlee322/timetable" target="_bleak">Github</a></li>
-        </ul>
-        <div class="collapse navbar-collapse">
+        <div class="collapse navbar-collapse" id="navbar">
+            <ul class="nav navbar-nav">
+                <li><a href="#" data-toggle="modal" data-target="#select_campus"><span
+                        id="campus_name">Loading...</span> <span
+                        class="glyphicon glyphicon-chevron-down"></span></a></li>
+                <li><a href="#" data-toggle="modal" data-target="#select_term" id="term_name">Loading...</a></li>
+                <li><a href="javascript:add_bookmark()">저장</a></li>
+                <li><a href="https://github.com/shlee322/timetable" target="_bleak">Github</a></li>
+            </ul>
             <p class="navbar-text navbar-right server-time">서버시간 <span id="server_time">Loading...</span>
                 <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></p>
         </div>
@@ -200,11 +200,6 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
-<script type="text/javascript" src="static/timetable.js"></script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -213,8 +208,12 @@
 
   ga('create', 'UA-65651836-1', 'auto');
   ga('send', 'pageview');
-
 </script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
+<script type="text/javascript" src="static/timetable.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         var timetable_generator_switch = $("#timetable_generator_switch");
