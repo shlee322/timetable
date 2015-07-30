@@ -1,8 +1,9 @@
 #!/bin/bash
 
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
+ORIGIN=$(git rev-parse origin/master)
+BRANCH=$(git rev-parse HEAD)
 
-if [ "$BRANCH" != "master" ]; then
+if [ "$BRANCH" != "$ORIGIN" ]; then
     exit 0
 fi
 
