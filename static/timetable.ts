@@ -15,6 +15,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/// <reference path="./DefinitelyTyped/jquery/jquery.d.ts" />
+/// <reference path="./DefinitelyTyped/bootstrap/bootstrap.d.ts" />
+/// <reference path="./DefinitelyTyped/google.analytics/ga.d.ts" />
+
 class Campus {
     private id;
     private univ_name;
@@ -249,14 +253,14 @@ class Lecture {
     public showTimetable() {
         if(this.timetable.length < 1) {
             var group = document.getElementById('timetable_etc_item_group');
-            var item = document.createElement('span');
-            item.setAttribute('role', 'button');
-            item.setAttribute('class', 'timetable-etc-item');
-            item.setAttribute('style', 'border-color:#1587BD;background-color:#9FC6E7;color:#1d1d1d;');
-            item.setAttribute('onclick', 'Timetable.getInstance().removeTimetableLecture("' + this.id + '")');
+            var etc_item = document.createElement('span');
+            etc_item.setAttribute('role', 'button');
+            etc_item.setAttribute('class', 'timetable-etc-item');
+            etc_item.setAttribute('style', 'border-color:#1587BD;background-color:#9FC6E7;color:#1d1d1d;');
+            etc_item.setAttribute('onclick', 'Timetable.getInstance().removeTimetableLecture("' + this.id + '")');
 
-            item.innerHTML = this.subject_name + ' (' + this.id + ')';
-            group.appendChild(item);
+            etc_item.innerHTML = this.subject_name + ' (' + this.id + ')';
+            group.appendChild(etc_item);
         } else {
             for(var i=0; i<this.timetable.length; i++) {
                 var time = this.timetable[i];
@@ -266,11 +270,11 @@ class Lecture {
                 var margin_top = (time.getDayStartTime() - 60*60*24)/60;
                 var height = (time.getDayEndTime() - time.getDayStartTime())/60;
 
-                var item = document.createElement('div');
-                item.setAttribute('role', 'button');
-                item.setAttribute('class', 'timetable-time-item');
-                item.setAttribute('style', 'margin-top:' + margin_top + 'px; height:' + height + 'px; border-color:#1587BD;background-color:#9FC6E7;color:#1d1d1d;');
-                item.setAttribute('onclick', 'Timetable.getInstance().removeTimetableLecture("' + this.id + '")');
+                var time_item = document.createElement('div');
+                time_item.setAttribute('role', 'button');
+                time_item.setAttribute('class', 'timetable-time-item');
+                time_item.setAttribute('style', 'margin-top:' + margin_top + 'px; height:' + height + 'px; border-color:#1587BD;background-color:#9FC6E7;color:#1d1d1d;');
+                time_item.setAttribute('onclick', 'Timetable.getInstance().removeTimetableLecture("' + this.id + '")');
 
                 var html = '<p><span class="timetable-time-item-subject">' + this.subject_name + '</span>';
                 html += '<span> ' + this.id + '</span></p>';
@@ -279,8 +283,8 @@ class Lecture {
                     html += '<span>' + time.place.name + time.place.room + '</span>';
                 }
                 html += '</p>';
-                item.innerHTML = html;
-                group.appendChild(item);
+                time_item.innerHTML = html;
+                group.appendChild(time_item);
             }
         }
     }
@@ -382,7 +386,7 @@ class Timetable {
     public init(): void
     {
         var hash_split = window.location.hash.split('/');
-        if(hash_split.length > 4 && !isNaN(hash_split[2]) && !isNaN(hash_split[3]) && hash_split[4] != '') {
+        if(hash_split.length > 4 && !isNaN(Number(hash_split[2])) && !isNaN(Number(hash_split[3])) && hash_split[4] != '') {
             this._hashinfo.campus = hash_split[1];
             this._hashinfo.year = Number(hash_split[2]);
             this._hashinfo.term = Number(hash_split[3]);

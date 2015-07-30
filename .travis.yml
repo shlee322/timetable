@@ -9,6 +9,7 @@ before_install:
 install:
   - "pip install -r requirements.txt"
   - "npm install -g typescript"
+  - "git clone --depth 1 git@github.com:borisyankov/DefinitelyTyped.git static/DefinitelyTyped"
 
 before_script:
   - "sh deploy/before_script.sh"
