@@ -18,4 +18,5 @@ eval $(ssh-agent)
 ssh-add deploy/deploy_key.pem
 
 git commit -m "Deploy"
-git push origin gh-pages
+git remote add deploy git@github.com:shlee322/timetable.git
+git push deploy gh-pages
