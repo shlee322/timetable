@@ -61,7 +61,7 @@ if __name__ == '__main__':
                 os.makedirs(update_data_dir)
 
                 # 크롤러 실행
-                subprocess.call(
+                subprocess.check_call(
                     [sys.executable, update_process, str(term['year']), str(term['term']), update_data_dir],
                     env=os.environ.copy()
                 )
@@ -98,7 +98,7 @@ if __name__ == '__main__':
         template = env.get_template('index.html')
         open(path.join(root_dir, 'index.html'), 'w').write(template.render())
         print('tsc timetable.ts')
-        subprocess.call(
+        subprocess.check_call(
             ['tsc', 'timetable.ts'],
             cwd=path.join(root_dir, 'static'),
             env=os.environ.copy()
