@@ -16,8 +16,5 @@ openssl aes-256-cbc -K $encrypted_ec37b4905d5e_key -iv $encrypted_ec37b4905d5e_i
 chmod 600 deploy/deploy_key.pem
 ssh-add deploy/deploy_key.pem
 
-git config --global user.name "Sanghyuck Lee"
-git config --global user.email shlee322@elab.kr
-
 git commit -m "Deploy"
 git push origin gh-pages
