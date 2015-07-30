@@ -478,7 +478,11 @@ class Timetable {
         this._currentYear = year;
         this._currentTerm = term;
 
-        ga('send', 'event', this.getCurrentCampus().getId(), 'setCurrentTerm', year + '/' + term);
+        ga('send', 'event', {
+            'category': this.getCurrentCampus().getId(),
+            'action': 'setCurrentTerm',
+            'label': year + '/' + term
+        });
 
         $.get('data/' + this.getCurrentCampus().getId() + '/' + year + '/term.json', function(data) {
             for(var i=0; i<data.length; i++) {
@@ -512,7 +516,7 @@ class Timetable {
     }
 
     public updateTermHTML(year) {
-        document.getElementById('input_year').value = year;
+        (<HTMLInputElement>document.getElementById('input_year')).value = year;
 
         var input_term = document.getElementById('input_term');
         input_term.innerHTML = '<option>Loading...</option>';
@@ -556,7 +560,11 @@ class Timetable {
             }
         });
 
-        ga('send', 'event', this.getCurrentCampus().getId(), 'selectDepartment', this._currentYear + '/' + this._currentTerm + '/' + depart_id);
+        ga('send', 'event', {
+            'category': this.getCurrentCampus().getId(),
+            'action': 'selectDepartment',
+            'label': this._currentYear + '/' + this._currentTerm + '/' + depart_id
+        });
     }
 
     public getDepartmentNames(depart_ids) {
@@ -618,7 +626,11 @@ class Timetable {
 
         this.updateShowLectures();
 
-        ga('send', 'event', this.getCurrentCampus().getId(), 'addTimetableLecture', this._currentYear + '/' + this._currentTerm + '/' + lecture_id);
+        ga('send', 'event', {
+            'category': this.getCurrentCampus().getId(),
+            'action': 'addTimetableLecture',
+            'label': this._currentYear + '/' + this._currentTerm + '/' + lecture_id
+        });
     }
 
     public removeTimetableLecture(lecture_id) {
@@ -691,11 +703,14 @@ class Timetable {
     }
 
     public generateTimetable() {
-        var min_credit = document.getElementById('timetable_generator_min_credit').value;
-        var max_credit = document.getElementById('timetable_generator_max_credit').value;
+        var min_credit_text = (<HTMLInputElement>document.getElementById('timetable_generator_min_credit')).value;
+        var max_credit_text = (<HTMLInputElement>document.getElementById('timetable_generator_max_credit')).value;
 
-        if(min_credit == '') min_credit = 17;
-        if(max_credit == '') max_credit = 21;
+        var min_credit = 17;
+        var max_credit = 21;
+
+        if(min_credit_text != '') min_credit = Number(min_credit_text);
+        if(max_credit_text != '') max_credit = Number(max_credit_text);
 
         if(isNaN(min_credit)) {
             alert('최소 학점이 잘못되었습니다');
@@ -706,9 +721,6 @@ class Timetable {
             alert('최대 학점이 잘못되었습니다');
             return;
         }
-
-        min_credit = Number(min_credit);
-        max_credit = Number(max_credit);
 
         if(min_credit < 1) {
             alert('최소 학점은 1보다 작을 수 없습니다');
