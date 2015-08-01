@@ -258,6 +258,7 @@ class Lecture {
             etc_item.setAttribute('class', 'timetable-etc-item');
             etc_item.setAttribute('style', 'border-color:#1587BD;background-color:#9FC6E7;color:#1d1d1d;');
             etc_item.setAttribute('onclick', 'Timetable.getInstance().removeTimetableLecture("' + this.id + '")');
+            etc_item.setAttribute('onmouseover', 'Timetable.getInstance().getLecture("' + this.id + '").showInfo()');
 
             etc_item.innerHTML = this.subject_name + ' (' + this.id + ')';
             group.appendChild(etc_item);
@@ -275,6 +276,7 @@ class Lecture {
                 time_item.setAttribute('class', 'timetable-time-item');
                 time_item.setAttribute('style', 'margin-top:' + margin_top + 'px; height:' + height + 'px; border-color:#1587BD;background-color:#9FC6E7;color:#1d1d1d;');
                 time_item.setAttribute('onclick', 'Timetable.getInstance().removeTimetableLecture("' + this.id + '")');
+                time_item.setAttribute('onmouseover', 'Timetable.getInstance().getLecture("' + this.id + '").showInfo()');
 
                 var html = '<p><span class="timetable-time-item-subject">' + this.subject_name + '</span>';
                 html += '<span> ' + this.id + '</span></p>';
