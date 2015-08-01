@@ -74,7 +74,9 @@ if __name__ == '__main__':
                             'name': str(campus_data['name']['term'][int(name)])
                         })
 
-                open(path.join(campus_data_dir, str(term['year']), 'term.json'), 'w').write(json.dumps(term_list))
+                open(path.join(campus_data_dir, str(term['year']), 'term.json'), 'w').write(json.dumps(term_list,
+                                                                                                       indent=4,
+                                                                                                       sort_keys=True))
 
         # 년도 데이터 생성
         year_list = []
@@ -84,11 +86,13 @@ if __name__ == '__main__':
 
         year_list.sort(reverse=True)
 
-        open(path.join(campus_data_dir, 'year.json'), 'w').write(json.dumps(year_list))
-        open(path.join(campus_data_dir, 'default.json'), 'w').write(json.dumps(campus_data.get('default')))
+        open(path.join(campus_data_dir, 'year.json'), 'w').write(json.dumps(year_list, indent=4, sort_keys=True))
+        open(path.join(campus_data_dir, 'default.json'), 'w').write(json.dumps(campus_data.get('default', indent=4,
+                                                                                               sort_keys=True)))
 
         # 서버 시간 안내를 위한 시간을 조회할 서버
-        open(path.join(campus_data_dir, 'timeserver.json'), 'w').write(json.dumps(campus_data.get('timeserver')))
+        open(path.join(campus_data_dir, 'timeserver.json'), 'w').write(json.dumps(campus_data.get('timeserver'),
+                                                                                  indent=4, sort_keys=True))
 
     def create_template():
         # template
@@ -117,4 +121,4 @@ if __name__ == '__main__':
         run_crawler(path.join(crawler_dir, crawler))
 
     # write campus.json
-    open(path.join(data_dir, 'campus.json'), 'w').write(json.dumps(CAMPUS_LIST))
+    open(path.join(data_dir, 'campus.json'), 'w').write(json.dumps(CAMPUS_LIST), indent=4, sort_keys=True)

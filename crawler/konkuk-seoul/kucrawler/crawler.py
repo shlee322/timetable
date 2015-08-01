@@ -153,7 +153,7 @@ class Lecture:
             'professors': self.professors,
             'links': self.links,
             'departments': self.departments
-        })
+        }, indent=4, sort_keys=True)
 
 
 def init_dir():
@@ -184,7 +184,7 @@ def load_departments():
             'name': sust.text.strip()
         })
 
-    open(department_file, 'w').write(json.dumps(departments))
+    open(department_file, 'w').write(json.dumps(departments, indent=4, sort_keys=True))
 
 
 @asyncio.coroutine
@@ -244,7 +244,7 @@ def load_department_lectures_coroutine(department):
         lecture_department_index.append(td_list[2].text)
 
     open(path.join(lecture_department_index_dir, '%s.json' % department['id']), 'w').write(
-        json.dumps(lecture_department_index))
+        json.dumps(lecture_department_index, indent=4, sort_keys=True))
 
 
 @asyncio.coroutine
