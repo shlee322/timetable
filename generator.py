@@ -87,8 +87,8 @@ if __name__ == '__main__':
         year_list.sort(reverse=True)
 
         open(path.join(campus_data_dir, 'year.json'), 'w').write(json.dumps(year_list, indent=4, sort_keys=True))
-        open(path.join(campus_data_dir, 'default.json'), 'w').write(json.dumps(campus_data.get('default', indent=4,
-                                                                                               sort_keys=True)))
+        open(path.join(campus_data_dir, 'default.json'), 'w').write(json.dumps(campus_data.get('default'),
+                                                                               indent=4, sort_keys=True))
 
         # 서버 시간 안내를 위한 시간을 조회할 서버
         open(path.join(campus_data_dir, 'timeserver.json'), 'w').write(json.dumps(campus_data.get('timeserver'),
