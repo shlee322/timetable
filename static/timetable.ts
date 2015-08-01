@@ -674,6 +674,15 @@ class Timetable {
 
     public addTimetableGeneratorRequestLecture(lecture) {
         if(!lecture.isLoad()) return;
+
+        for(var i=0; i<this._timetableGeneratorRequestLectures.length; i++) {
+            var lecture2 = this._timetableGeneratorRequestLectures[i];
+            if(lecture.getId() == lecture2.getId()) {
+                alert('해당 수업이 이미 생성기에 넣어져 있습니다.');
+                return;
+            }
+        }
+
         this._timetableGeneratorRequestLectures.push(lecture);
         this.updateTimetableGenerator();
     }
