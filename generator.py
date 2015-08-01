@@ -121,4 +121,4 @@ if __name__ == '__main__':
         run_crawler(path.join(crawler_dir, crawler))
 
     # write campus.json
-    open(path.join(data_dir, 'campus.json'), 'w').write(json.dumps(CAMPUS_LIST), indent=4, sort_keys=True)
+    open(path.join(data_dir, 'campus.json'), 'w').write(json.dumps(CAMPUS_LIST, indent=4, sort_keys=True))
