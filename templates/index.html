@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           rel="stylesheet">
     <link href="static/timetable.css" rel="stylesheet">
     <link href="static/glyphicon-refresh-animate.css" rel="stylesheet">
+    <link href="static/spinkit.css" rel="stylesheet">
 
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -33,6 +34,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <![endif]-->
 </head>
 <body>
+<div class="lecture-loading-div" id="lecture_loading_div">
+    <div class="text-center">강의 정보 불러오는 중...</div>
+    <div class="text-center" id="lecture_loading_state"></div>
+    <div class="text-center">
+        <div class="spinner">
+          <div class="cube1"></div>
+          <div class="cube2"></div>
+        </div>
+    </div>
+</div>
+
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -68,6 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         onchange="Timetable.getInstance().selectDepartment($(this).val())">
                     <option>Loading...</option>
                 </select>
+                <input type="text" id="search_text" class="form-control" placeholder="과목코드, 구분, 과목명 등"/>
             </div>
             <div class="search-results">
                 <div class="list-group" id="search_results">
@@ -286,6 +299,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             if($('#input_term').val()=='') return;
             Timetable.getInstance().setCurrentTerm(Number($('#input_year').val()), Number($('#input_term').val()));
             $('#select_term').modal('hide');
+        });
+
+        $('#search_text').keyup(function() {
+            Timetable.getInstance().changeSearchText();
         });
 
         window.scrollTo(0, 60 * 9);

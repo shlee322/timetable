@@ -159,6 +159,10 @@ class Lecture {
         return this.id;
     }
 
+    public getType() {
+        return this.type;
+    }
+
     public getSubjectCode() {
         return this.subject_code;
     }
@@ -189,7 +193,15 @@ class Lecture {
         return false;
     }
 
+    public hasDepartment(depart_id) {
+        for(var i=0; i<this.departments.length; i++) {
+            if(this.departments[i] == depart_id) return true;
+        }
+        return false;
+    }
+
     public update() {
+        Timetable.getInstance().onStartLoadLecture(this);
         var lecture = this;
         $.get('data/' + this.campus_id + '/' + this.year + '/' + this.term + '/lecture/' + this.id + '.json', function(data) {
             lecture._loading = true;
@@ -206,6 +218,8 @@ class Lecture {
             lecture.type = data.type;
             lecture.showResultList(false);
             Timetable.getInstance().updateShowLectures();
+
+            Timetable.getInstance().onFinishLoadLecture(lecture);
         });
     }
 
@@ -495,26 +509,62 @@ class Timetable {
             }
         });
 
-        $.get('data/' + this.getCurrentCampus().getId() + '/' + year + '/' + term + '/department.json', function(data) {
-            for(var i=0; i<data.length; i++) {
-                Timetable.getInstance().addDepartment(data[i]);
-            }
-            Timetable.getInstance().updateDepartmentListHTML();
-            Timetable.getInstance().selectDepartment(data[0].id);
-        });
+        $("#lecture_loading_state").text('');
+        $("#lecture_loading_div").show();
 
+        var timetable = this;
+
+        $.get('data/' + this.getCurrentCampus().getId() + '/' + year + '/' + term + '/lecture.json', function(data) {
+            for(var i=0; i<data.length; i++) {
+                var lecture_id = data[i];
+
+                if(!timetable._lectures[lecture_id]) {
+                    timetable._lectures[lecture_id] = new Lecture(timetable.getCurrentCampus().getId(), year, term, lecture_id);
+                    timetable._lectures[lecture_id].update();
+                }
+            }
+        });
+    }
+
+    public onStartLoadLecture(lecture) {
+    }
+
+    public onFinishLoadLecture(lecture) {
+        var loadCount = 0;
+        var allCount = 0;
+        for(var name in this._lectures) {
+            if(this._lectures[name].isLoad()) loadCount += 1;
+            allCount += 1;
+        }
+
+        $("#lecture_loading_state").text(loadCount + '/' + allCount);
+
+        if(loadCount == allCount) {
+            this.onFinishLoadLectures();
+        }
+    }
+
+    public onFinishLoadLectures() {
         if(this._hashinfo.lectures.length > 0) {
             for(var i=0; i<this._hashinfo.lectures.length; i++) {
                 var lecture_id = this._hashinfo.lectures[i];
-                if(!this._lectures[lecture_id]) {
-                    this._lectures[lecture_id] = new Lecture(this.getCurrentCampus().getId(), this._currentYear, this._currentTerm, lecture_id);
-                    this._lectures[lecture_id].update();
+                if(this._lectures[lecture_id]) {
                     this._timetableLectures.push(this._lectures[lecture_id]);
                 }
             }
 
             this._hashinfo.lectures = [];
         }
+
+        $.get('data/' + this.getCurrentCampus().getId() + '/' + this._currentYear + '/' + this._currentTerm + '/department.json', function(data) {
+            for(var i=0; i<data.length; i++) {
+                Timetable.getInstance().addDepartment(data[i]);
+            }
+
+            Timetable.getInstance().updateDepartmentListHTML();
+            Timetable.getInstance().selectDepartment(data[0].id);
+            $("#lecture_loading_div").hide();
+        });
     }
 
     public updateTermHTML(year) {
@@ -553,20 +603,68 @@ class Timetable {
     }
 
     public selectDepartment(depart_id) {
-        $.get('data/' + this.getCurrentCampus().getId() + '/' + this._currentYear + '/' + this._currentTerm + '/lecture_department_index/' + depart_id + '.json', function(data) {
-            var viewer = document.getElementById('search_results');
-            viewer.innerHTML = '';
+        if($('#search_text').val() != '') $('#search_text').val('');
 
-            for(var i=0; i<data.length; i++) {
-                Timetable.getInstance().showLectureList(data[i]);
+        var viewer = document.getElementById('search_results');
+        viewer.innerHTML = '';
+
+        for(var name in this._lectures) {
+            if(this._lectures[name].hasDepartment(depart_id)) {
+                Timetable.getInstance().showLectureList(this._lectures[name].getId());
             }
-        });
+        }
 
         ga('send', 'event', {
             'category': this.getCurrentCampus().getId(),
             'action': 'selectDepartment',
             'label': this._currentYear + '/' + this._currentTerm + '/' + depart_id
         });
+    }
+
+    public changeSearchText() {
+        var query = $('#search_text').val();
+        var depart_id = $('#department_list').val();
+
+        if(query == '') {
+            this.selectDepartment(depart_id);
+            return;
+        }
+
+        var viewer = document.getElementById('search_results');
+        viewer.innerHTML = '';
+
+        // 과목코드 일치
+        if(this._lectures[query]) Timetable.getInstance().showLectureList(this._lectures[query].getId());
+
+        // 과목 구분 입력 (선택한 전공 내에서만 나옴)
+        for(var name in this._lectures) {
+            var lecture = this._lectures[name];
+            if(lecture.hasDepartment(depart_id) && lecture.getType() == query) {
+                Timetable.getInstance().showLectureList(lecture.getId());
+            }
+        }
+
+        // 과목 명 검색 (선택한 전공 우선 순위)
+        for(var name in this._lectures) {
+            var lecture = this._lectures[name];
+            if(lecture.hasDepartment(depart_id) && lecture.getSubjectName().indexOf(query) === 0) {
+                Timetable.getInstance().showLectureList(lecture.getId());
+            }
+        }
+        for(var name in this._lectures) {
+            var lecture = this._lectures[name];
+            if(!lecture.hasDepartment(depart_id) && lecture.getSubjectName().indexOf(query) === 0) {
+                Timetable.getInstance().showLectureList(lecture.getId());
+            }
+        }
+
+        // 과목명 코드 (이수번호) 검색
+        for(var name in this._lectures) {
+            var lecture = this._lectures[name];
+            if(lecture.getSubjectCode() == query) {
+                Timetable.getInstance().showLectureList(lecture.getId());
+            }
+        }
     }
 
     public getDepartmentNames(depart_ids) {

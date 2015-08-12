@@ -44,8 +44,8 @@ term = TERM_CODE.get(sys.argv[2])
 data_dir = sys.argv[3]
 
 department_file = path.join(data_dir, 'department.json')
+lecture_file = path.join(data_dir, 'lecture.json')
 lecture_dir = path.join(data_dir, 'lecture')
-lecture_department_index_dir = path.join(data_dir, 'lecture_department_index')
 
 departments = []
 lectures = {}
@@ -161,8 +161,6 @@ def init_dir():
     if not path.exists(lecture_dir):
         os.makedirs(lecture_dir)
 
-    if not path.exists(lecture_department_index_dir):
-        os.makedirs(lecture_department_index_dir)
 
 
 def load_departments():
@@ -243,9 +241,6 @@ def load_department_lectures_coroutine(department):
 
         lecture_department_index.append(td_list[2].text)
 
-    open(path.join(lecture_department_index_dir, '%s.json' % department['id']), 'w').write(
-        json.dumps(lecture_department_index, indent=4, sort_keys=True))
-
 
 @asyncio.coroutine
 def load_department_lectures_worker():
@@ -316,3 +311,5 @@ def save_lecture():
     print("Konkuk Univ - Seoul Campus : save_lecture")
     for lecture in lectures.values():
         open(path.join(lecture_dir, '%s.json' % lecture.id), 'w').write(lecture.to_json())
+
+    open(lecture_file, 'w').write(json.dumps(lectures.keys(), indent=4, sort_keys=True))
