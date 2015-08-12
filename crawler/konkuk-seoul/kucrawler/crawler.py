@@ -312,4 +312,4 @@ def save_lecture():
     for lecture in lectures.values():
         open(path.join(lecture_dir, '%s.json' % lecture.id), 'w').write(lecture.to_json())
 
-    open(lecture_file, 'w').write(json.dumps(lectures.keys(), indent=4, sort_keys=True))
+    open(lecture_file, 'w').write(json.dumps(list(lectures.keys()), indent=4, sort_keys=True))
