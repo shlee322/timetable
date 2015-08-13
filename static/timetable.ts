@@ -513,6 +513,8 @@ class Timetable {
             }
 
             this._hashinfo.lectures = [];
+
+            this.updateShowLectures();
         }
 
         $.get('data/' + this.getCurrentCampus().getId() + '/' + this._currentYear + '/' + this._currentTerm + '/department.json', function(data) {
