@@ -128,7 +128,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="timetable-time-col timetable-time-col-label">목</div>
                     <div class="timetable-time-col timetable-time-col-label">금</div>
                     <div class="timetable-time-col timetable-time-col-label">토</div>
-                    <div class="timetable-time-col timetable-time-col-label">일</div>
+                    <div class="timetable-time-col timetable-time-col-label timetable-time-col-sunday">일</div>
                 </div>
                 <div id="timetable_etc_item_group" class="timetable-etc-item-group">
                 </div>
@@ -146,7 +146,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         {% endfor %}
                     </div>
                     {% for col in range(7) %}
-                    <div class="timetable-time-col">
+                    <div class="timetable-time-col{% if col==6 %} timetable-time-col-sunday{% endif %}">
                         {% for i in range(24) %}
                         <div class="timetable-time-col-div-1"></div>
                         <div class="timetable-time-col-div-2"></div>

@@ -130,6 +130,16 @@ body {
     }
 }
 
+.timetable-time-col-sunday {
+    display: none;
+}
+
+@media (min-width: 400px) {
+    .timetable-time-col-sunday {
+        display: inline;
+    }
+}
+
 .timetable-time-col-label {
     border: 1px solid #f5f5f5;
     text-align:center;
