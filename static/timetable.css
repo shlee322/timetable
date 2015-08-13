@@ -121,7 +121,13 @@ body {
 
 .timetable-time-col {
     float: left;
-    width: 100px;
+    width: 50px;
+}
+
+@media (min-width: 1200px) {
+    .timetable-time-col {
+        width: 100px;
+    }
 }
 
 .timetable-time-col-label {
@@ -167,11 +173,18 @@ body {
 
 .timetable-time-item {
     position: absolute;
-    margin-left: 10px;
-    margin-right: 10px;
-    width: 80px;
+    width: 50px;
     border: 1px solid #ffffff;
     font-size: 11px;
+}
+
+@media (min-width: 1200px) {
+    .timetable-time-item {
+        position: absolute;
+        margin-left: 10px;
+        margin-right: 10px;
+        width: 80px;
+    }
 }
 
 .timetable-time-item-subject {
