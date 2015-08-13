@@ -110,7 +110,7 @@ class Lecture:
         self.type = more_data[0].get('pobtDivNm')
         self.credit = int(more_data[0].get('pnt'))
         self.timetable, self.tags = get_lecture_timetable(more_data[0].get('time'))
-        self.professors = more_data[0].get('prof').split(',')
+        self.professors = [prof.strip() for prof in more_data[0].get('prof').split(',')]
 
         self.links.append({
             'name': '강의계획서',
