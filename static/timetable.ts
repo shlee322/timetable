@@ -630,7 +630,7 @@ class Timetable {
         var names = [];
         for(var i=0; i<this._department.length; i++) {
             for(var id_i=0; id_i<depart_ids.length; id_i++) {
-                if(this._department[i].getId() == depart_ids[i]) {
+                if(this._department[i].getId() == depart_ids[id_i]) {
                     names.push(this._department[i].getName());
                 }
             }
