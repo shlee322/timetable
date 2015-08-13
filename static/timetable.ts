@@ -135,24 +135,24 @@ class Lecture {
     private tags;
     private timetable;
     private type;
-    private _loading = false;
 
-    constructor(campus_id, year, term, lecture_id) {
+    constructor(campus_id, year, term, data) {
         this.campus_id = campus_id;
         this.year = year;
         this.term = term;
-        this.id = lecture_id;
-
-        this.credit = 0;
-        this.departments = [];
-        this.grade = 0;
-        this.links = [];
-        this.professors = [];
-        this.subject_code = "";
-        this.subject_name = "";
-        this.tags = [];
+        this.id = data.id;
         this.timetable = [];
-        this.type = "";
+        this.credit = data.credit;
+        this.departments = data.departments;
+        this.grade = data.grade;
+        this.links = data.links;
+        this.professors = data.professors;
+        this.subject_code = data.subject_code;
+        this.subject_name = data.subject_name;
+        this.tags = data.tags;
+        this.timetable = [];
+        for(var i=0; i<data.timetable.length; i++) this.timetable.push(new LectureTime(data.timetable[i]));
+        this.type = data.type;
     }
 
     public getId() {
@@ -169,10 +169,6 @@ class Lecture {
 
     public getSubjectName() {
         return this.subject_name;
-    }
-
-    public isLoad() {
-        return this._loading;
     }
 
     public getCredit() {
@@ -200,27 +196,11 @@ class Lecture {
         return false;
     }
 
-    public update() {
-        Timetable.getInstance().onStartLoadLecture(this);
-        var lecture = this;
-        $.get('data/' + this.campus_id + '/' + this.year + '/' + this.term + '/lecture/' + this.id + '.json', function(data) {
-            lecture._loading = true;
-            lecture.credit = data.credit;
-            lecture.departments = data.departments;
-            lecture.grade = data.grade;
-            lecture.links = data.links;
-            lecture.professors = data.professors;
-            lecture.subject_code = data.subject_code;
-            lecture.subject_name = data.subject_name;
-            lecture.tags = data.tags;
-            lecture.timetable = [];
-            for(var i=0; i<data.timetable.length; i++) lecture.timetable.push(new LectureTime(data.timetable[i]));
-            lecture.type = data.type;
-            lecture.showResultList(false);
-            Timetable.getInstance().updateShowLectures();
-
-            Timetable.getInstance().onFinishLoadLecture(lecture);
-        });
+    public hasProfessor(professor_name) {
+        for(var i=0; i<this.professors.length; i++) {
+            if(this.professors[i] == professor_name) return true;
+        }
+        return false;
     }
 
     public showResultList(create) {
@@ -240,12 +220,7 @@ class Lecture {
         lectureHTML.setAttribute('onclick', 'Timetable.getInstance().addTimetableLecture("' + this.id + '")');
         lectureHTML.setAttribute('onmouseover', 'Timetable.getInstance().setSelectLecture("' + this.id + '")');
         lectureHTML.setAttribute('onmouseout', 'Timetable.getInstance().setSelectLecture(null)');
-
-        if(!this._loading) {
-            lectureHTML.innerHTML = '<span class="label label-default">' + this.id + '</span> Loading...';
-        } else {
-            lectureHTML.innerHTML = '<span class="label label-default">' + this.id + '</span> ' + this.subject_name;
-        }
+        lectureHTML.innerHTML = '<span class="label label-default">' + this.id + '</span> ' + this.subject_name;
 
         if(create) {
             viewer.appendChild(lectureHTML);
@@ -494,6 +469,10 @@ class Timetable {
         this._currentYear = year;
         this._currentTerm = term;
 
+
+        $("#lecture_loading_state").text('');
+        $("#lecture_loading_div").show();
+
         ga('send', 'event', {
             'category': this.getCurrentCampus().getId(),
             'action': 'setCurrentTerm',
@@ -509,39 +488,19 @@ class Timetable {
             }
         });
 
-        $("#lecture_loading_state").text('');
-        $("#lecture_loading_div").show();
-
-        var timetable = this;
 
         $.get('data/' + this.getCurrentCampus().getId() + '/' + year + '/' + term + '/lecture.json', function(data) {
             for(var i=0; i<data.length; i++) {
-                var lecture_id = data[i];
+                var lecture_data = data[i];
 
-                if(!timetable._lectures[lecture_id]) {
-                    timetable._lectures[lecture_id] = new Lecture(timetable.getCurrentCampus().getId(), year, term, lecture_id);
-                    timetable._lectures[lecture_id].update();
+                if(!Timetable.getInstance()._lectures[lecture_data.id]) {
+                    Timetable.getInstance()._lectures[lecture_data.id] = new Lecture(
+                        Timetable.getInstance().getCurrentCampus().getId(), year, term, lecture_data);
                 }
             }
+
+            Timetable.getInstance().onFinishLoadLectures();
         });
-    }
-
-    public onStartLoadLecture(lecture) {
-    }
-
-    public onFinishLoadLecture(lecture) {
-        var loadCount = 0;
-        var allCount = 0;
-        for(var name in this._lectures) {
-            if(this._lectures[name].isLoad()) loadCount += 1;
-            allCount += 1;
-        }
-
-        $("#lecture_loading_state").text(loadCount + '/' + allCount);
-
-        if(loadCount == allCount) {
-            this.onFinishLoadLectures();
-        }
     }
 
     public onFinishLoadLectures() {
@@ -644,16 +603,16 @@ class Timetable {
             }
         }
 
-        // 과목 명 검색 (선택한 전공 우선 순위)
+        // 과목 명, 교수명 검색 (선택한 전공 우선 순위)
         for(var name in this._lectures) {
             var lecture = this._lectures[name];
-            if(lecture.hasDepartment(depart_id) && lecture.getSubjectName().indexOf(query) === 0) {
+            if(lecture.hasDepartment(depart_id) && (lecture.getSubjectName().indexOf(query) === 0 || lecture.hasProfessor(query))) {
                 Timetable.getInstance().showLectureList(lecture.getId());
             }
         }
         for(var name in this._lectures) {
             var lecture = this._lectures[name];
-            if(!lecture.hasDepartment(depart_id) && lecture.getSubjectName().indexOf(query) === 0) {
+            if(!lecture.hasDepartment(depart_id) && (lecture.getSubjectName().indexOf(query) === 0 || lecture.hasProfessor(query))) {
                 Timetable.getInstance().showLectureList(lecture.getId());
             }
         }
@@ -680,10 +639,7 @@ class Timetable {
     }
 
     public showLectureList(lecture_id) {
-        if(!this._lectures[lecture_id]) {
-            this._lectures[lecture_id] = new Lecture(this.getCurrentCampus().getId(), this._currentYear, this._currentTerm, lecture_id);
-            this._lectures[lecture_id].update();
-        }
+        if(!this._lectures[lecture_id]) return;
         this._lectures[lecture_id].showResultList(true);
     }
 
@@ -771,8 +727,6 @@ class Timetable {
     }
 
     public addTimetableGeneratorRequestLecture(lecture) {
-        if(!lecture.isLoad()) return;
-
         for(var i=0; i<this._timetableGeneratorRequestLectures.length; i++) {
             var lecture2 = this._timetableGeneratorRequestLectures[i];
             if(lecture.getId() == lecture2.getId()) {

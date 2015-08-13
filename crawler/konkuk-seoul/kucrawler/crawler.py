@@ -140,8 +140,8 @@ class Lecture:
     def add_department(self, department):
         self.departments.append(department)
 
-    def to_json(self):
-        return json.dumps({
+    def to_dict(self):
+        return {
             'id': self.id,
             'type': self.type,
             'grade': self.grade,
@@ -153,7 +153,7 @@ class Lecture:
             'professors': self.professors,
             'links': self.links,
             'departments': self.departments
-        }, indent=4, sort_keys=True)
+        }
 
 
 def init_dir():
@@ -309,7 +309,10 @@ def save_lecture():
     loop.run_until_complete(wait_load_lectures())
 
     print("Konkuk Univ - Seoul Campus : save_lecture")
-    for lecture in lectures.values():
-        open(path.join(lecture_dir, '%s.json' % lecture.id), 'w').write(lecture.to_json())
 
-    open(lecture_file, 'w').write(json.dumps(list(lectures.keys()), indent=4, sort_keys=True))
+    lecture_list = []
+    for lecture in lectures.values():
+        lecture_list.append(lecture.to_dict())
+    lecture_list = sorted(lecture_list, key=lambda lecture_info: lecture_info['id'])
+
+    open(lecture_file, 'w').write(json.dumps(lecture_list, indent=4, sort_keys=True))
