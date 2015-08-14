@@ -175,6 +175,10 @@ class Lecture {
         return this.credit;
     }
 
+    public getTimetable() {
+        return this.timetable;
+    }
+
     public overlapTime(target) {
         for(var this_i=0; this_i<this.timetable.length; this_i++) {
             for(var target_i=0; target_i<target.timetable.length; target_i++) {
@@ -655,6 +659,21 @@ class Timetable {
 
         if(lecture) {
             lecture.showInfo();
+
+            // 강의 시간이 있다면 스크롤을 '강의 시간 - 1시간' 으로 변경
+            if(lecture.getTimetable().length > 0) {
+                var scrollY = 60 * 24;
+                var times = lecture.getTimetable();
+
+                for(var i=0; i<times.length; i++) {
+                    var time = times[i].getDayStartTime() / 60;
+                    if(time < scrollY) scrollY = time;
+                }
+
+                scrollY -= 60;
+
+                window.scrollTo(0, scrollY);
+            }
         }
 
         this.updateShowLectures();
