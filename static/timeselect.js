@@ -37,6 +37,7 @@ function updateSelectMouseData() {
 
 $(document).ready(function () {
     $('.timetable-table > .timetable-time-col').mousedown(function (event) {
+        if(event.target.className != "timetable-time-col-div-1" && event.target.className != "timetable-time-col-div-2") return;
         selectMouseData.selected = true;
         selectMouseData.day = Number($(event.toElement).parent('.timetable-time-col').data('day'));
         selectMouseData.y1 = event.pageY - 100;
