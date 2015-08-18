@@ -146,10 +146,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         {% endfor %}
                     </div>
                     {% for col in range(7) %}
-                    <div class="timetable-time-col{% if col==6 %} timetable-time-col-sunday{% endif %}">
+                    <div class="timetable-time-col{% if col==6 %} timetable-time-col-sunday{% endif %}" data-day="{{ col }}">
                         {% for i in range(24) %}
-                        <div class="timetable-time-col-div-1"></div>
-                        <div class="timetable-time-col-div-2"></div>
+                        <div id="timetable_time_col_{{ col }}_timediv_{{ i*2 }}" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_{{ col }}_timediv_{{ i*2+1 }}" class="timetable-time-col-div-2"></div>
                         {% endfor %}
                         <div id="timetable_time_item_group_{{ col }}" class="timetable-time-item-group">
                         </div>
@@ -286,6 +286,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
 <script type="text/javascript" src="static/timetable.js"></script>
 <script type="text/javascript" src="static/mytimetable.js"></script>
+<script type="text/javascript" src="static/timeselect.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         var timetable_generator_switch = $("#timetable_generator_switch");

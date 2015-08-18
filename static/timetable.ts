@@ -193,6 +193,14 @@ class Lecture {
         return false;
     }
 
+    public insideTime(time_1, time_2) {
+        for(var i=0; i<this.timetable.length; i++) {
+            var time = this.timetable[i];
+            if(time_1<=time.time.start && time.time.end<=time_2) return true;
+        }
+        return false;
+    }
+
     public hasDepartment(depart_id) {
         for(var i=0; i<this.departments.length; i++) {
             if(this.departments[i] == depart_id) return true;
@@ -938,5 +946,49 @@ class Timetable {
         this._hashinfo.term = term;
         this._hashinfo.lectures = lecture_ids;
         this.setCurrentCampus(campus);
+    }
+
+    public overlapMyTimetable(lecture) {
+        for(var i=0; i<this._timetableLectures.length; i++) {
+            if(this._timetableLectures[i].overlapTime(lecture)) return true;
+        }
+        return false;
+    }
+
+    public searchLectureByTime(time_1, time_2) {
+        var depart_id = $('#department_list').val();
+
+        var viewer = document.getElementById('search_results');
+        viewer.innerHTML = '';
+
+        for(var name in this._lectures) {
+            var lecture = this._lectures[name];
+
+            if(!this.overlapMyTimetable(lecture) && lecture.hasDepartment(depart_id) && lecture.insideTime(time_1, time_2)) {
+                Timetable.getInstance().showLectureList(lecture.getId());
+            }
+        }
+
+        for(var name in this._lectures) {
+            var lecture = this._lectures[name];
+            if(!this.overlapMyTimetable(lecture) && !lecture.hasDepartment(depart_id) && lecture.insideTime(time_1, time_2)) {
+                Timetable.getInstance().showLectureList(lecture.getId());
+            }
+        }
+
+        for(var name in this._lectures) {
+            var lecture = this._lectures[name];
+
+            if(this.overlapMyTimetable(lecture) && lecture.hasDepartment(depart_id) && lecture.insideTime(time_1, time_2)) {
+                Timetable.getInstance().showLectureList(lecture.getId());
+            }
+        }
+
+        for(var name in this._lectures) {
+            var lecture = this._lectures[name];
+            if(this.overlapMyTimetable(lecture) && !lecture.hasDepartment(depart_id) && lecture.insideTime(time_1, time_2)) {
+                Timetable.getInstance().showLectureList(lecture.getId());
+            }
+        }
     }
 }
