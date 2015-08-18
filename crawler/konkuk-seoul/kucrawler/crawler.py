@@ -141,6 +141,7 @@ class Lecture:
         self.departments.append(department)
 
     def to_dict(self):
+        self.departments = sorted(self.departments)
         return {
             'id': self.id,
             'type': self.type,
