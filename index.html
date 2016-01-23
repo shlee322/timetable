@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2015 Sanghyuck Lee <shlee322@elab.kr>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Timetable</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/yeti/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css"
+          rel="stylesheet">
+    <link href="static/timetable.css" rel="stylesheet">
+    <link href="static/glyphicon-refresh-animate.css" rel="stylesheet">
+    <link href="static/spinkit.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="lecture-loading-div" id="lecture_loading_div">
+    <div class="text-center">강의 정보 불러오는 중...</div>
+    <div class="text-center" id="lecture_loading_state"></div>
+    <div class="text-center">
+        <div class="spinner">
+          <div class="cube1"></div>
+          <div class="cube2"></div>
+        </div>
+    </div>
+</div>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Timetable</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+            <ul class="nav navbar-nav">
+                <li><a href="#" data-toggle="modal" data-target="#select_campus"><span
+                        id="campus_name">Loading...</span> <span
+                        class="glyphicon glyphicon-chevron-down"></span></a></li>
+                <li><a href="#" data-toggle="modal" data-target="#select_term" id="term_name">Loading...</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#my_timetable">내 시간표 관리</a></li>
+                <li><a href="https://github.com/shlee322/timetable" target="_bleak">Github</a></li>
+            </ul>
+            <p class="navbar-text navbar-right server-time">서버시간 <span id="server_time">Loading...</span>
+                <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></p>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <div class="form-group">
+                <label for="department_list"></label>
+                <select id="department_list" class="form-control"
+                        onchange="Timetable.getInstance().selectDepartment($(this).val())">
+                    <option>Loading...</option>
+                </select>
+                <input type="text" id="search_text" class="form-control" placeholder="과목코드, 구분, 과목명, 교수명 등"/>
+            </div>
+            <div class="search-results">
+                <div class="list-group" id="search_results">
+                    <button type="button" class="list-group-item">Loading...</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="timetable_generator_switch"> 시간표조합기
+                </label>
+            </div>
+            <div id="timetable_generator" style="display: none;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="timetable_generator_min_credit">최소 학점</label>
+                            <input type="number" class="form-control" id="timetable_generator_min_credit" placeholder="17">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="timetable_generator_max_credit">최대 학점</label>
+                            <input type="number" class="form-control" id="timetable_generator_max_credit" placeholder="21">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-default" onclick="Timetable.getInstance().generateTimetable()">생성</button>
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-default" onclick="Timetable.getInstance().previousTimetableGeneratorTimetable()">&laquo;</button>
+                  <button type="button" class="btn btn-default" id="timetable_generator_index_viewer">0/0</button>
+                  <button type="button" class="btn btn-default" onclick="Timetable.getInstance().nextTimetableGeneratorTimetable()">&raquo;</button>
+                </div>
+                <div class="timetable-generator-request-lectures">
+                    <div class="list-group" id="timetable_generator_request_lectures">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 timetable">
+            <div class="timetable-lecture-etc-list">
+                <div>
+                    <div class="timetable-time-col timetable-time-col-label">월</div>
+                    <div class="timetable-time-col timetable-time-col-label">화</div>
+                    <div class="timetable-time-col timetable-time-col-label">수</div>
+                    <div class="timetable-time-col timetable-time-col-label">목</div>
+                    <div class="timetable-time-col timetable-time-col-label">금</div>
+                    <div class="timetable-time-col timetable-time-col-label">토</div>
+                    <div class="timetable-time-col timetable-time-col-label timetable-time-col-sunday">일</div>
+                </div>
+                <div id="timetable_etc_item_group" class="timetable-etc-item-group">
+                </div>
+            </div>
+            <div class="timetable-lecture-table-div">
+                <div class="timetable-table">
+                    <div class="timetable-time-label-td">
+                        <div class="timetable-time-label">오전 12시</div>
+                        
+                        <div class="timetable-time-label">오전 1시</div>
+                        
+                        <div class="timetable-time-label">오전 2시</div>
+                        
+                        <div class="timetable-time-label">오전 3시</div>
+                        
+                        <div class="timetable-time-label">오전 4시</div>
+                        
+                        <div class="timetable-time-label">오전 5시</div>
+                        
+                        <div class="timetable-time-label">오전 6시</div>
+                        
+                        <div class="timetable-time-label">오전 7시</div>
+                        
+                        <div class="timetable-time-label">오전 8시</div>
+                        
+                        <div class="timetable-time-label">오전 9시</div>
+                        
+                        <div class="timetable-time-label">오전 10시</div>
+                        
+                        <div class="timetable-time-label">오전 11시</div>
+                        
+                        <div class="timetable-time-label">오후 12시</div>
+                        
+                        <div class="timetable-time-label">오후 1시</div>
+                        
+                        <div class="timetable-time-label">오후 2시</div>
+                        
+                        <div class="timetable-time-label">오후 3시</div>
+                        
+                        <div class="timetable-time-label">오후 4시</div>
+                        
+                        <div class="timetable-time-label">오후 5시</div>
+                        
+                        <div class="timetable-time-label">오후 6시</div>
+                        
+                        <div class="timetable-time-label">오후 7시</div>
+                        
+                        <div class="timetable-time-label">오후 8시</div>
+                        
+                        <div class="timetable-time-label">오후 9시</div>
+                        
+                        <div class="timetable-time-label">오후 10시</div>
+                        
+                        <div class="timetable-time-label">오후 11시</div>
+                        
+                    </div>
+                    
+                    <div class="timetable-time-col" data-day="0">
+                        
+                        <div id="timetable_time_col_0_timediv_0" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_1" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_2" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_3" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_4" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_5" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_6" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_7" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_8" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_9" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_10" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_11" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_12" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_13" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_14" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_15" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_16" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_17" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_18" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_19" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_20" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_21" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_22" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_23" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_24" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_25" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_26" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_27" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_28" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_29" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_30" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_31" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_32" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_33" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_34" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_35" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_36" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_37" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_38" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_39" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_40" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_41" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_42" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_43" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_44" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_45" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_0_timediv_46" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_0_timediv_47" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_item_group_0" class="timetable-time-item-group">
+                        </div>
+                    </div>
+                    
+                    <div class="timetable-time-col" data-day="1">
+                        
+                        <div id="timetable_time_col_1_timediv_0" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_1" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_2" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_3" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_4" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_5" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_6" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_7" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_8" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_9" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_10" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_11" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_12" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_13" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_14" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_15" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_16" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_17" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_18" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_19" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_20" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_21" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_22" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_23" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_24" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_25" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_26" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_27" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_28" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_29" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_30" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_31" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_32" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_33" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_34" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_35" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_36" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_37" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_38" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_39" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_40" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_41" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_42" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_43" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_44" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_45" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_1_timediv_46" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_1_timediv_47" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_item_group_1" class="timetable-time-item-group">
+                        </div>
+                    </div>
+                    
+                    <div class="timetable-time-col" data-day="2">
+                        
+                        <div id="timetable_time_col_2_timediv_0" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_1" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_2" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_3" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_4" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_5" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_6" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_7" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_8" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_9" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_10" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_11" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_12" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_13" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_14" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_15" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_16" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_17" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_18" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_19" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_20" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_21" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_22" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_23" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_24" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_25" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_26" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_27" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_28" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_29" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_30" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_31" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_32" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_33" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_34" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_35" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_36" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_37" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_38" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_39" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_40" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_41" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_42" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_43" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_44" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_45" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_2_timediv_46" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_2_timediv_47" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_item_group_2" class="timetable-time-item-group">
+                        </div>
+                    </div>
+                    
+                    <div class="timetable-time-col" data-day="3">
+                        
+                        <div id="timetable_time_col_3_timediv_0" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_1" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_2" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_3" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_4" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_5" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_6" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_7" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_8" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_9" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_10" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_11" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_12" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_13" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_14" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_15" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_16" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_17" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_18" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_19" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_20" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_21" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_22" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_23" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_24" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_25" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_26" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_27" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_28" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_29" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_30" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_31" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_32" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_33" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_34" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_35" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_36" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_37" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_38" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_39" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_40" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_41" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_42" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_43" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_44" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_45" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_3_timediv_46" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_3_timediv_47" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_item_group_3" class="timetable-time-item-group">
+                        </div>
+                    </div>
+                    
+                    <div class="timetable-time-col" data-day="4">
+                        
+                        <div id="timetable_time_col_4_timediv_0" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_1" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_2" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_3" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_4" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_5" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_6" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_7" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_8" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_9" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_10" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_11" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_12" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_13" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_14" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_15" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_16" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_17" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_18" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_19" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_20" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_21" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_22" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_23" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_24" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_25" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_26" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_27" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_28" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_29" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_30" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_31" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_32" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_33" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_34" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_35" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_36" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_37" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_38" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_39" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_40" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_41" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_42" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_43" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_44" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_45" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_4_timediv_46" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_4_timediv_47" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_item_group_4" class="timetable-time-item-group">
+                        </div>
+                    </div>
+                    
+                    <div class="timetable-time-col" data-day="5">
+                        
+                        <div id="timetable_time_col_5_timediv_0" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_1" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_2" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_3" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_4" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_5" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_6" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_7" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_8" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_9" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_10" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_11" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_12" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_13" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_14" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_15" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_16" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_17" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_18" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_19" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_20" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_21" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_22" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_23" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_24" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_25" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_26" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_27" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_28" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_29" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_30" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_31" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_32" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_33" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_34" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_35" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_36" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_37" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_38" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_39" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_40" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_41" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_42" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_43" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_44" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_45" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_5_timediv_46" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_5_timediv_47" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_item_group_5" class="timetable-time-item-group">
+                        </div>
+                    </div>
+                    
+                    <div class="timetable-time-col timetable-time-col-sunday" data-day="6">
+                        
+                        <div id="timetable_time_col_6_timediv_0" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_1" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_2" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_3" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_4" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_5" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_6" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_7" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_8" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_9" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_10" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_11" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_12" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_13" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_14" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_15" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_16" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_17" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_18" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_19" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_20" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_21" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_22" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_23" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_24" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_25" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_26" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_27" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_28" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_29" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_30" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_31" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_32" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_33" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_34" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_35" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_36" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_37" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_38" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_39" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_40" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_41" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_42" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_43" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_44" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_45" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_col_6_timediv_46" class="timetable-time-col-div-1"></div>
+                        <div id="timetable_time_col_6_timediv_47" class="timetable-time-col-div-2"></div>
+                        
+                        <div id="timetable_time_item_group_6" class="timetable-time-item-group">
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="small footer">Copyright &copy; 2015 <a href="mailto:shlee322@elab.kr">이상혁</a> All rights reserved, Code licensed under AGPL 3 License.</div>
+        </div>
+        <div class="col-sm-3 col-md-2 info-div">
+            <div id="lecture_info" class="lecture-info" style="display:none;">
+                <h3 id="lecture_info_subject_name"></h3>
+
+                <p id="lecture_info_id"></p>
+                <h4 id="lecture_info_professors"></h4>
+                <h4 id="lecture_info_departments"></h4>
+
+                <div id="lecture_info_timetable" class="lecture-info-timetable">
+                </div>
+                <p id="lecture_info_tags">
+                </p>
+
+                <div class="text-right lecture-info-links">
+                    <div class="dropdown">
+                        <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="true">
+                            링크
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" id="lecture_info_links">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="select_campus" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">학교 선택</h4>
+            </div>
+            <div class="modal-body">
+                <div id="campus_list" class="list-group">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="select_term" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">학기 선택</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="input_year">년도</label>
+                    <input type="number" id="input_year" class="form-control" onchange="Timetable.getInstance().updateTermHTML(Number($(this).val()))"/>
+                </div>
+                <div class="form-group">
+                    <label for="input_term">학기</label>
+                    <select id="input_term" class="form-control">
+                        <option>Loading...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" id="select_term_btn">선택</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="my_timetable" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="my_timetable_title">내 시간표 관리</h4>
+            </div>
+            <div class="modal-body">
+                <div id="my_timetable_login">
+                    <a id="kakao_login_btn"></a>
+                    <p><small>현재 시간표 저장은 카카오 계정으로만 가능합니다.</small></p>
+                </div>
+                <div id="my_timetable_list" style="display: none;">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>학교</th>
+                                <th>등록시간</th>
+                                <th>불러오기</th>
+                                <th>삭제</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my_timetable_tbody">
+                            <tr>
+                                <td colspan="4">등록된 시간표가 존재하지 않습니다</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <form class="form-inline" onsubmit="return save_my_timetable($('#my_timetable_name').val());">
+                      <button type="submit" class="btn btn-default">저장</button>
+                      <small>현재 시간표 저장은 한개만 가능하며 기존의 시간표가 있을 경우 덮어쓰기 됩니다</small>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-65651836-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+<script type="text/javascript" src="static/timetable.js"></script>
+<script type="text/javascript" src="static/mytimetable.js"></script>
+<script type="text/javascript" src="static/timeselect.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var timetable_generator_switch = $("#timetable_generator_switch");
+        timetable_generator_switch.bootstrapSwitch();
+        timetable_generator_switch.on('switchChange.bootstrapSwitch', function (event, state) {
+            $("#timetable_generator").toggle(state);
+            Timetable.getInstance().setTimetableGeneratorState(state);
+        });
+
+        $('#select_term_btn').click(function() {
+            if($('#input_term').val()=='') return;
+            Timetable.getInstance().setCurrentTerm(Number($('#input_year').val()), Number($('#input_term').val()));
+            $('#select_term').modal('hide');
+        });
+
+        $('#search_text').keyup(function() {
+            Timetable.getInstance().changeSearchText();
+        });
+
+        window.scrollTo(0, 60 * 9);
+        Timetable.getInstance().init();
+    });
+</script>
+</body>
+</html>
