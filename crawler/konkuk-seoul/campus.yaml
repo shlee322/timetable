@@ -1,11 +1,11 @@
 timeserver: http://kupis.konkuk.ac.kr
 update:
-  year: 2015
-  term: 3
+  year: 2016
+  term: 1
   script: crawler.py
 default:
-  year: 2015
-  term: 3
+  year: 2016
+  term: 1
 name:
   univ: 건국대학교
   campus: 서울
