@@ -7509,10 +7509,10 @@
         "timetable": [
             {
                 "place": {
-                    "lat": 37.542446,
-                    "lng": 127.076501,
-                    "name": "\ubbf8\ubc30\uc815",
-                    "room": ""
+                    "lat": 37.542916,
+                    "lng": 127.073022,
+                    "name": "\uc608",
+                    "room": "412"
                 },
                 "time": {
                     "end": 151200,
@@ -7554,10 +7554,10 @@
         "timetable": [
             {
                 "place": {
-                    "lat": 37.542446,
-                    "lng": 127.076501,
-                    "name": "\ubbf8\ubc30\uc815",
-                    "room": ""
+                    "lat": 37.542916,
+                    "lng": 127.073022,
+                    "name": "\uc608",
+                    "room": "412"
                 },
                 "time": {
                     "end": 320400,
@@ -10599,7 +10599,7 @@
                     "lat": 37.540632,
                     "lng": 127.074089,
                     "name": "\ub3d9",
-                    "room": "710-5"
+                    "room": "710-3"
                 },
                 "time": {
                     "end": 235800,
@@ -10657,7 +10657,7 @@
                     "lat": 37.540632,
                     "lng": 127.074089,
                     "name": "\ub3d9",
-                    "room": "710-5"
+                    "room": "710-3"
                 },
                 "time": {
                     "end": 230400,
@@ -11707,10 +11707,10 @@
         "timetable": [
             {
                 "place": {
-                    "lat": 37.540632,
-                    "lng": 127.074089,
-                    "name": "\ub3d9",
-                    "room": "710-5"
+                    "lat": 37.539169,
+                    "lng": 127.074701,
+                    "name": "\uc218",
+                    "room": "409"
                 },
                 "time": {
                     "end": 64800,
@@ -12574,7 +12574,8 @@
             "121263",
             "122047",
             "122048",
-            "126783"
+            "126783",
+            "126793"
         ],
         "grade": 1,
         "id": "0362",
@@ -12639,7 +12640,8 @@
             "121263",
             "122047",
             "122048",
-            "126783"
+            "126783",
+            "126793"
         ],
         "grade": 1,
         "id": "0363",
@@ -14080,14 +14082,14 @@
         "timetable": [
             {
                 "place": {
-                    "lat": 37.539751,
-                    "lng": 127.073113,
-                    "name": "\uc0b0\ud559",
-                    "room": "207"
+                    "lat": 37.542446,
+                    "lng": 127.076501,
+                    "name": "\ubbf8\ubc30\uc815",
+                    "room": ""
                 },
                 "time": {
-                    "end": 151200,
-                    "start": 140400
+                    "end": 237600,
+                    "start": 226800
                 }
             }
         ],
@@ -15438,7 +15440,8 @@
             "121261",
             "121263",
             "122047",
-            "122048"
+            "122048",
+            "126793"
         ],
         "grade": 1,
         "id": "0417",
@@ -15497,7 +15500,8 @@
             "121261",
             "121263",
             "122047",
-            "122048"
+            "122048",
+            "126793"
         ],
         "grade": 1,
         "id": "0418",
@@ -15556,7 +15560,8 @@
             "121261",
             "121263",
             "122047",
-            "122048"
+            "122048",
+            "126793"
         ],
         "grade": 1,
         "id": "0419",
@@ -16059,7 +16064,8 @@
     {
         "credit": 3,
         "departments": [
-            "122216"
+            "122216",
+            "126785"
         ],
         "grade": 1,
         "id": "0428",
@@ -16115,7 +16121,8 @@
         "credit": 3,
         "departments": [
             "122215",
-            "122216"
+            "122216",
+            "126785"
         ],
         "grade": 1,
         "id": "0429",
@@ -17468,7 +17475,8 @@
         "departments": [
             "121263",
             "122047",
-            "122048"
+            "122048",
+            "126793"
         ],
         "grade": 1,
         "id": "0453",
@@ -18692,7 +18700,8 @@
             "121263",
             "122047",
             "122048",
-            "126783"
+            "126783",
+            "126793"
         ],
         "grade": 1,
         "id": "0476",
@@ -18754,7 +18763,8 @@
             "121263",
             "122047",
             "122048",
-            "126783"
+            "126783",
+            "126793"
         ],
         "grade": 1,
         "id": "0477",
@@ -18816,7 +18826,8 @@
             "121263",
             "122047",
             "122048",
-            "126783"
+            "126783",
+            "126793"
         ],
         "grade": 1,
         "id": "0478",
@@ -18878,7 +18889,8 @@
             "121263",
             "122047",
             "122048",
-            "126783"
+            "126783",
+            "126793"
         ],
         "grade": 1,
         "id": "0479",
@@ -21383,7 +21395,7 @@
         "subject_code": "BRAA54665",
         "subject_name": "\uc0dd\uba85\uacfc\ud559\uc6d0\ub9ac\ubc0f\uc2e4\ud5d81",
         "tags": [
-            "1\ud559\ub144 \ud559\uc0dd\ub4e4\ub9cc \uc218\uac15\uac00\ub2a5"
+            "\uc0dd\uba85\uacfc\ud559\ud2b9\uc131\ud559\uacfc 1\ud559\ub144\ub9cc \ud559\uc0dd\ub4e4\ub9cc \uc218\uac15\uac00\ub2a5"
         ],
         "timetable": [
             {
@@ -21443,7 +21455,7 @@
         "subject_code": "BRAA54665",
         "subject_name": "\uc0dd\uba85\uacfc\ud559\uc6d0\ub9ac\ubc0f\uc2e4\ud5d81",
         "tags": [
-            "2,3,4\ud559\ub144 \ud559\uc0dd \uc218\uac15\uac00\ub2a5"
+            "\uc0dd\uba85\uacfc\ud559\ud2b9\uc131\ud559\uacfc 2,3,4\ud559\ub144\ub9cc \ud559\uc0dd \uc218\uac15\uac00\ub2a5"
         ],
         "timetable": [
             {
@@ -36510,7 +36522,7 @@
             }
         ],
         "professors": [
-            "\ud64d\uc7ac\ubc94"
+            "\uc804\uc6b0\ud615"
         ],
         "subject_code": "BKSA39786",
         "subject_name": "\ubb38\ud559\uacfc\uc601\uc0c1",
@@ -38679,7 +38691,7 @@
             }
         ],
         "professors": [
-            "\uae40\ubcd1\uc120"
+            "\uae40\ubbfc\uc11c"
         ],
         "subject_code": "BKSA49593",
         "subject_name": "\uacf5\ud559\uae30\uc220\uacfc\uacbd\uc601",
@@ -40164,7 +40176,7 @@
             }
         ],
         "professors": [
-            "\ubbf8\ubc30\uc815"
+            "\uae40\ubcf5\uc218"
         ],
         "subject_code": "BKSA49632",
         "subject_name": "\ucc3d\uc758\uc801\ubb38\uc81c\ud574\uacb0",
@@ -40209,7 +40221,7 @@
             }
         ],
         "professors": [
-            "\ubbf8\ubc30\uc815"
+            "\ubc15\uc7a5\ud6c8"
         ],
         "subject_code": "BKSA49632",
         "subject_name": "\ucc3d\uc758\uc801\ubb38\uc81c\ud574\uacb0",
@@ -41019,7 +41031,7 @@
             }
         ],
         "professors": [
-            "\ubbf8\ubc30\uc815"
+            "\uc774\ud6c4\uc131"
         ],
         "subject_code": "BKSA49637",
         "subject_name": "\ubbf8\ub798\uc0ac\ud68c\uc640\ud45c\uc900",
@@ -41287,7 +41299,7 @@
             }
         ],
         "professors": [
-            "\uad8c\uc740\ud61c"
+            "\uc591\uc7ac\ud601"
         ],
         "subject_code": "BKSA49642",
         "subject_name": "\uc11c\uc591\ubb38\uba85\uc0ac",
@@ -41860,7 +41872,7 @@
             }
         ],
         "professors": [
-            "\uae40\ubbfc\uc11c"
+            "\uc815\ud61c\uc5f0"
         ],
         "subject_code": "BKSA53993",
         "subject_name": "\uae30\uc220\uc0ac\ud68c\uc758\ud328\ub7ec\ub2e4\uc784",
@@ -44086,7 +44098,7 @@
             }
         ],
         "professors": [
-            "\uc724\uc7ac\uc5f0"
+            "\uae40\uc8fc\uc5f0"
         ],
         "subject_code": "BABA04156",
         "subject_name": "\uad6d\uc5b4\ud559\uac1c\ub860",
@@ -48732,6 +48744,7 @@
     {
         "credit": 3,
         "departments": [
+            "104601",
             "122104"
         ],
         "grade": 1,
@@ -48889,15 +48902,15 @@
         "subject_code": "BGPA09404",
         "subject_name": "\uc774\ubbf8\uc9c0\uc6d4\ub4dc",
         "tags": [
-            "\ud604\ub300\ubbf8\uc220\ud559\uacfc\ub9cc \uc218\uac15\uac00\ub2a5\r\n"
+            "\ud604\ub300\ubbf8\uc220\ud559\uacfc\ub9cc \uc218\uac15\uac00\ub2a5"
         ],
         "timetable": [
             {
                 "place": {
-                    "lat": 37.542446,
-                    "lng": 127.076501,
-                    "name": "\ubbf8\ubc30\uc815",
-                    "room": ""
+                    "lat": 37.542916,
+                    "lng": 127.073022,
+                    "name": "\uc608",
+                    "room": "402"
                 },
                 "time": {
                     "end": 392400,
@@ -48939,10 +48952,10 @@
         "timetable": [
             {
                 "place": {
-                    "lat": 37.542446,
-                    "lng": 127.076501,
-                    "name": "\ubbf8\ubc30\uc815",
-                    "room": ""
+                    "lat": 37.542916,
+                    "lng": 127.073022,
+                    "name": "\uc608",
+                    "room": "401"
                 },
                 "time": {
                     "end": 43200,
@@ -48984,10 +48997,10 @@
         "timetable": [
             {
                 "place": {
-                    "lat": 37.542446,
-                    "lng": 127.076501,
-                    "name": "\ubbf8\ubc30\uc815",
-                    "room": ""
+                    "lat": 37.542916,
+                    "lng": 127.073022,
+                    "name": "\uc608",
+                    "room": "412"
                 },
                 "time": {
                     "end": 414000,
@@ -56888,10 +56901,10 @@
         "timetable": [
             {
                 "place": {
-                    "lat": 37.540632,
-                    "lng": 127.074089,
-                    "name": "\ub3d9",
-                    "room": "710-5"
+                    "lat": 37.539169,
+                    "lng": 127.074701,
+                    "name": "\uc218",
+                    "room": "104"
                 },
                 "time": {
                     "end": 133200,
@@ -56900,10 +56913,10 @@
             },
             {
                 "place": {
-                    "lat": 37.540632,
-                    "lng": 127.074089,
-                    "name": "\ub3d9",
-                    "room": "710-5"
+                    "lat": 37.539169,
+                    "lng": 127.074701,
+                    "name": "\uc218",
+                    "room": "104"
                 },
                 "time": {
                     "end": 392400,
@@ -57144,10 +57157,10 @@
         "timetable": [
             {
                 "place": {
-                    "lat": 37.540632,
-                    "lng": 127.074089,
-                    "name": "\ub3d9",
-                    "room": "710-5"
+                    "lat": 37.539169,
+                    "lng": 127.074701,
+                    "name": "\uc218",
+                    "room": "104"
                 },
                 "time": {
                     "end": 147600,
@@ -57156,10 +57169,10 @@
             },
             {
                 "place": {
-                    "lat": 37.540632,
-                    "lng": 127.074089,
-                    "name": "\ub3d9",
-                    "room": "710-5"
+                    "lat": 37.539169,
+                    "lng": 127.074701,
+                    "name": "\uc218",
+                    "room": "104"
                 },
                 "time": {
                     "end": 406800,
@@ -57592,10 +57605,10 @@
         "timetable": [
             {
                 "place": {
-                    "lat": 37.540632,
-                    "lng": 127.074089,
-                    "name": "\ub3d9",
-                    "room": "710-5"
+                    "lat": 37.539169,
+                    "lng": 127.074701,
+                    "name": "\uc218",
+                    "room": "104"
                 },
                 "time": {
                     "end": 306000,
@@ -57792,10 +57805,10 @@
         "timetable": [
             {
                 "place": {
-                    "lat": 37.540632,
-                    "lng": 127.074089,
-                    "name": "\ub3d9",
-                    "room": "710-5"
+                    "lat": 37.539169,
+                    "lng": 127.074701,
+                    "name": "\uc218",
+                    "room": "104"
                 },
                 "time": {
                     "end": 320400,
@@ -65006,7 +65019,8 @@
             }
         ],
         "professors": [
-            "\uae40\uc644\uc120"
+            "\uae40\uc644\uc120",
+            "\ubc15\uc815\ub3c4"
         ],
         "subject_code": "BHEA10133",
         "subject_name": "\uc804\uacf5\uc2e4\uae303",
@@ -66407,7 +66421,9 @@
         ],
         "subject_code": "BAAD56943",
         "subject_name": "\uc720\ub7fd\uc778\uc744\uc704\ud55c\ud55c\uad6d\ubb38\ud654",
-        "tags": [],
+        "tags": [
+            "\ud504\ub791\uc2a4, \ubd81\uc720\ub7fd, \ub3c5\uc77c\ud559\uc0dd\ub9cc \uc218\uac15\uc2e0\uccad \uac00\ub2a5"
+        ],
         "timetable": [
             {
                 "place": {
@@ -74050,7 +74066,9 @@
         ],
         "subject_code": "BBDA39757",
         "subject_name": "\uc885\ud569\uc124\uacc4",
-        "tags": [],
+        "tags": [
+            "\uc774\uc7ac\ud6a8, \uae40\uc131\uade0, \uac15\ucca0\uad6c, \ubc15\uc815\uaddc \uad50\uc218\ub2d8\uc758 \uc9c0\ub3c4\ud559\uc0dd\ub4e4\uc740     \uae40\uc131\uade0 \uad50\uc218\ub2d8\uc758 \uc885\ud569\uc124\uacc4 \uc218\uac15\r\n\uc815\ud0dc\uac74, \ub098\uc591, \uc774\ubcd1\uc6b1, \uae40\uc131\uc9c4 \uad50\uc218\ub2d8\uc758 \uc9c0\ub3c4\ud559\uc0dd\ub4e4\uc740        \uae40\uc131\uc9c4 \uad50\uc218\ub2d8\uc758 \uc885\ud569\uc124\uacc4 \uc218\uac15\r\n"
+        ],
         "timetable": [
             {
                 "place": {
@@ -74118,7 +74136,10 @@
         ],
         "subject_code": "BBDA39757",
         "subject_name": "\uc885\ud569\uc124\uacc4",
-        "tags": [],
+        "tags": [
+            "b\ub7ec\ub2dd",
+            "\uc774\uc7ac\ud6a8, \uae40\uc131\uade0, \uac15\ucca0\uad6c, \ubc15\uc815\uaddc \uad50\uc218\ub2d8\uc758 \uc9c0\ub3c4\ud559\uc0dd\ub4e4\uc740     \uae40\uc131\uade0 \uad50\uc218\ub2d8\uc758 \uc885\ud569\uc124\uacc4 \uc218\uac15\r\n\uc815\ud0dc\uac74, \ub098\uc591, \uc774\ubcd1\uc6b1, \uae40\uc131\uc9c4 \uad50\uc218\ub2d8\uc758 \uc9c0\ub3c4\ud559\uc0dd\ub4e4\uc740        \uae40\uc131\uc9c4 \uad50\uc218\ub2d8\uc758 \uc885\ud569\uc124\uacc4 \uc218\uac15\r\n"
+        ],
         "timetable": [
             {
                 "place": {
@@ -79511,7 +79532,9 @@
         ],
         "subject_code": "BBOA55529",
         "subject_name": "\uc885\ud569\uc124\uacc4",
-        "tags": [],
+        "tags": [
+            "- \uc774\uc131\uc218, \uae40\ucc3d\uc644, \uc774\ub3d9\uc9c4, \uae40\ub0a8\uc218 \uad50\uc218 \uc9c0\ub3c4\ud559\uc0dd ==> \uc774\ub3d9\uc9c4 \uad50\uc218 \ubc18 \uc218\uac15\r\n- \uc2e0\uae30\ud604, \uace0\uc131\ub9bc, \uc774\uc0c1\uc724 \uad50\uc218 \uc9c0\ub3c4\ud559\uc0dd ==> \uace0\uc131\ub9bc \uad50\uc218 \ubc18 \uc218\uac15\r\n"
+        ],
         "timetable": [
             {
                 "place": {
@@ -79579,7 +79602,9 @@
         ],
         "subject_code": "BBOA55529",
         "subject_name": "\uc885\ud569\uc124\uacc4",
-        "tags": [],
+        "tags": [
+            "- \uc774\uc131\uc218, \uae40\ucc3d\uc644, \uc774\ub3d9\uc9c4, \uae40\ub0a8\uc218 \uad50\uc218 \uc9c0\ub3c4\ud559\uc0dd ==> \uc774\ub3d9\uc9c4 \uad50\uc218 \ubc18 \uc218\uac15\r\n- \uc2e0\uae30\ud604, \uace0\uc131\ub9bc, \uc774\uc0c1\uc724 \uad50\uc218 \uc9c0\ub3c4\ud559\uc0dd ==> \uace0\uc131\ub9bc \uad50\uc218 \ubc18 \uc218\uac15\r\n"
+        ],
         "timetable": [
             {
                 "place": {
@@ -88398,7 +88423,7 @@
             }
         ],
         "professors": [
-            "\ubbf8\ubc30\uc815"
+            "\uac15\ud559\uc218"
         ],
         "subject_code": "BEFA05553",
         "subject_name": "\ubb3c\ub9ac\ud654\ud559",
@@ -88455,7 +88480,7 @@
             }
         ],
         "professors": [
-            "\ubbf8\ubc30\uc815"
+            "\uac15\ud559\uc218"
         ],
         "subject_code": "BEFA08248",
         "subject_name": "\ubc1c\ud6a8\uacf5\ud559",
@@ -93865,6 +93890,7 @@
     {
         "credit": 3,
         "departments": [
+            "104601",
             "122104"
         ],
         "grade": 4,
@@ -94008,6 +94034,7 @@
     {
         "credit": 3,
         "departments": [
+            "104601",
             "122104"
         ],
         "grade": 3,
@@ -95647,7 +95674,7 @@
                     "lat": 37.542916,
                     "lng": 127.073022,
                     "name": "\uc608",
-                    "room": "412"
+                    "room": "413"
                 },
                 "time": {
                     "end": 392400,
@@ -95690,7 +95717,7 @@
                     "lat": 37.542916,
                     "lng": 127.073022,
                     "name": "\uc608",
-                    "room": "412"
+                    "room": "413"
                 },
                 "time": {
                     "end": 410400,
@@ -97485,10 +97512,10 @@
         "timetable": [
             {
                 "place": {
-                    "lat": 37.542446,
-                    "lng": 127.076501,
-                    "name": "\ubbf8\ubc30\uc815",
-                    "room": ""
+                    "lat": 37.542916,
+                    "lng": 127.073022,
+                    "name": "\uc608",
+                    "room": "414"
                 },
                 "time": {
                     "end": 61200,
@@ -99233,7 +99260,7 @@
             }
         ],
         "professors": [
-            "\ubbf8\ubc30\uc815"
+            "\uc190\uc131\ud5cc"
         ],
         "subject_code": "BGSA53521",
         "subject_name": "\uc81c\ud488\uae08\uc18d\uacf5\uc6081",
@@ -99243,8 +99270,8 @@
                 "place": {
                     "lat": 37.542446,
                     "lng": 127.076501,
-                    "name": null,
-                    "room": null
+                    "name": "\uae08\uc18d\uacf5\uc608\uc2e4",
+                    "room": ""
                 },
                 "time": {
                     "end": 237600,
@@ -121695,7 +121722,8 @@
         "subject_code": "BGNA08826",
         "subject_name": "\uc785\uccb4\uad6c\uc1311",
         "tags": [
-            "\uc601\uc5b4(\uc678\uad6d\uc778\uc218\uac15\ubd88\uac00)"
+            "\uc601\uc5b4(\uc678\uad6d\uc778\uc218\uac15\ubd88\uac00)",
+            "\uc758\uc0c1\ub514\uc790\uc778 \uc6d0\uc804\uacf5, \ub2e4\uc804\uacf5, \ubd80\uc804\uacf5\ub9cc \uc218\uac15\uac00\ub2a5"
         ],
         "timetable": [
             {
