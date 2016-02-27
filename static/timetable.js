@@ -33,7 +33,7 @@ var Campus = (function () {
         return this.campus_name;
     };
     return Campus;
-})();
+}());
 var Department = (function () {
     function Department(department_info) {
         this.id = department_info.id;
@@ -46,7 +46,7 @@ var Department = (function () {
         return this.name;
     };
     return Department;
-})();
+}());
 var LectureTime = (function () {
     function LectureTime(time_info) {
         this.place = time_info.place;
@@ -98,7 +98,7 @@ var LectureTime = (function () {
         return LectureTime.getDayTime(this.time.end);
     };
     return LectureTime;
-})();
+}());
 var Lecture = (function () {
     function Lecture(campus_id, year, term, data) {
         this.campus_id = campus_id;
@@ -290,7 +290,7 @@ var Lecture = (function () {
         }
     };
     return Lecture;
-})();
+}());
 var Timetable = (function () {
     function Timetable() {
         this._campus = [];
@@ -826,4 +826,4 @@ var Timetable = (function () {
     };
     Timetable._instance = new Timetable();
     return Timetable;
-})();
+}());
